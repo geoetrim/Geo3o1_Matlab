@@ -1,0 +1,47 @@
+3D georeferencing of Pléiades 1A&1B primary, SPOT 6&7 primary and Göktürk 1 L2A tri-stereo images by Prof. Hüseyin TOPAN, Dr. Gürsu AYTEKÝN, Zonguldak Bülent Ecevit University, December 2020, Zonguldak, Turkey
+
+Date: 2021  6 21 17 57  6
+
+1. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_4\269koor_GCP_XYZ.txt 
+
+1. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_4\269.XML 
+
+2. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_4\283koor_GCP_XYZ.txt 
+
+2. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_4\283.XML 
+
+Functional Model ID: 3 
+
+RMSE of all points via direct georeferencing
+mX = ±    3.1677481224 (m)
+mY = ±    7.6057071315 (m)
+mZ = ±    2.3709398272 (m)
+
+Pre-adjustment for LOS angles was applied.
+
+RMSE of GCPs via direct georeferencing following pre-adjustment
+mX = ±    0.0003075288 (m)
+mY = ±    0.0000309343 (m)
+mZ = ±    0.0002887094 (m)
+
+RMSE of ICPs via direct georeferencing following pre-adjustment
+mX = ±    1.5933977492 (m)
+mY = ±    0.5715792570 (m)
+mZ = ±    1.4809304387 (m)
+
+Bundle adjustment iteration:  1 
+
+RMSE at GCPs after bundle adjustment
+mX = ±    0.0085932642 (m)
+mY = ±    0.0039452942 (m)
+mZ = ±    0.0090963213 (m)
+
+RMSE on ICPs after bundle adjustment
+mX = ±    1.5965451435 (m)
+mY = ±    0.5708209426 (m)
+mZ = ±    1.4852314756 (m)
+
+Difference =      0.000 
+
+----------------------------------------------
+
