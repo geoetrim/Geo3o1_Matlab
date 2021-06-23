@@ -1,4 +1,4 @@
-%Determination approximate values of unknowns with 2nd order polynomial
+%Estimation of polynomial coefficients
 %Coded by Hüseyin TOPAN (ZKÜ) July 2009
 
 function dx = appvalue(gcp, k , dxy, order)
@@ -15,7 +15,7 @@ for i = 1 : length (gcp(:, 1))
 end
 
 % dx =  inv(A' * A) * A' * L;
-dx =  (A' * A) \ (A' * L);
+dx = (A' * A) \ (A' * L);
 
 % v = A * dx - L;
 % 

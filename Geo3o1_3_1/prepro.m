@@ -1,4 +1,4 @@
-% Preprocessing of points and Metadata
+% Preprocessing of points and metadata
 % Recoded by Hüseyin TOPAN (BEÜ), November 2015
 
 function prepro(i)
@@ -36,7 +36,7 @@ assignin('base', 'points', points)
 
 %===== Calculation of Satellite position's coefficients via polynomial approach =====
 for j = 1 : 3
-    if i == 2
+    if i > 1
         Ps_coef = evalin('base', 'Ps_coef');
     end
     Ps_coef(j , : , i) = appvalue(points(: , : , i), j + 9 , 7 , 2); % 2nd order poly.

@@ -18,10 +18,10 @@ GCP file
 13 ~X and X <= added by program (~X for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), X: corrected value)
 14 ~Y and Y <= added by program (~Y for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), Y: corrected value)
 15 ~Z and Z <= added by program (~Z for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), Z: corrected value)
-16 tan(psiy) <= added by program
-17 tan(psix) <= added by program
-18 psiy <= added by program
-19 psix <= added by program
+16 tan(psiy) <= added by program for Model ID = 2
+17 tan(psix) <= added by program for Model ID = 2
+18 psiy <= added by program for Model ID = 3
+19 psix <= added by program for Model ID = 3
 
 Satellite position & velocity file:
  1 time (second)

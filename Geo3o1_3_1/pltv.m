@@ -20,12 +20,12 @@ else
 end
 
 %% Define scale(s)
-scale_gcp = 2e3;
+scale_gcp = 2e6;
 if icp ~=0
-    if j == 1
+    if j == 1 %For the pre-adjustment step
         mgcp = evalin('base', 'mdg'); %#ok<NASGU>
         micp = evalin('base', 'mdi'); %#ok<NASGU>
-    elseif j == 3
+    elseif j == 3 %for the bundle adjustment step
         mgcp = evalin('base', 'mgcp'); %#ok<NASGU>
         micp = evalin('base', 'micp'); %#ok<NASGU>
     end

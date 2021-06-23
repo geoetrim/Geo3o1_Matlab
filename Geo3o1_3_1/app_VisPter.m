@@ -11,10 +11,10 @@ elseif mdl == 3
     psix = gcp(19);
 end
 
-t_offset = evalin('base', 't_offset');
-t_scale  = evalin('base', 't_scale');
-
-Q = evalin('base', 'Q');
+%Loading the values varied to the stereo combination
+t_offset = evalin('base', 't_offset_sc');
+t_scale  = evalin('base', 't_scale_sc');
+Q = evalin('base', 'Q_sc');
 
 %% Estimation
 if mdl == 1

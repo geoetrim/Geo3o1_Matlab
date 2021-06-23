@@ -1,7 +1,7 @@
 % Estimation of ground coordinates of GCPs via corrected EOPs and LOS.
 % Coded bu Hüseyin Topan, BEÜ, December 2015.
 
-function est_XYZ_u(unknwn, LOS, gcp1, gcp2, fid, model_id, icp1, icp2)
+function point = est_XYZ_u(unknwn, LOS, gcp1, gcp2, icp1, icp2, fid, model_id)
 
 % ===== Estimation of GCPs via stereo intersection =====
 for i = 1 : length(gcp1(: , 1));
@@ -16,7 +16,7 @@ for i = 1 : length(gcp1(: , 1));
     
     dPs = Ps(: , 2) - Ps(: , 1);
     
-    m = inv(A' * A) * A' * dPs;                       
+    m = (A' * A) \ (A' * dPs);                       
 
     gcp1(i , 13 : 15) = ((Ps(: , 1)' - m(1) * VisPter_1') + (Ps(: , 2)' - m(2) * VisPter_2')) / 2;
 end
@@ -31,21 +31,20 @@ for i = 1 : 3
     mgcp(i) = sqrt((dgcp(: , i)' * dgcp(: , i)) / length(dgcp(: , 1)));
 end
 fprintf(fid,'RMSE at GCPs after bundle adjustment\n');
-fprintf(fid,'mX = +/- %15.10f (m)\nmY = +/- %15.10f (m)\nmZ = +/- %15.10f (m)\n\n', mgcp);
+fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', mgcp);
 assignin('base', 'mgcp', mgcp)
 
 % ===== Rebuild the GCP file (GCP + ICP if exist) =====
 if icp1 == 0
-    points(: , : , 1) = gcp1;
-    points(: , : , 2) = gcp2;
+    point(: , : , 1) = gcp1;
+    point(: , : , 2) = gcp2;
 else
-    points(: , : , 1) = [gcp1; icp1];
-    points(: , : , 2) = [gcp2; icp2];
+    point(: , : , 1) = [gcp1; icp1];
+    point(: , : , 2) = [gcp2; icp2];
 end
 
 for i = 1 : 2
-    points(: , : , i) = sortrows(points(: , : , i) , 1);
+    point(: , : , i) = sortrows(point(: , : , i) , 1);
 end
 
-assignin('base', 'points', points)
 assignin('base', 'fid', fid);

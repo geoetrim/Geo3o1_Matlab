@@ -1,28 +1,17 @@
-% Block adjustment for Pléiades images
-% Gauss-Helmert Model: A.x + B.v + w = 0
-% Coded by Hüseyin TOPAN (BEÜ), March 2016
+% Bundle adjustment for Geo3o1
+% Gauss-Helmert Model: Ax + Bv + w = 0
+% Coded by Prof. Dr. Hüseyin TOPAN (ZBEÜ), June 2021
 
 function bndl
 
 %% ===== D E F I N A T I O N S and L O A D I N G =====
-%===== Iteration limit =====
-iteration_limit = 1; if iteration_limit == 1; display('Attention! Total iteration: 1'); end
+number_images = evalin('base','number_images');
 
 %===== Loading file id =====
 fid = evalin('base', 'fid');
 
-%===== Select functional model ID =====
-model_id = 3;
-fprintf(fid, 'Functional Model ID: %1d \n\n', model_id);
-
 %===== Loading all points =====
 points = evalin('base', 'points');
-
-%===== GCP-ICP separation =====
-Spc; Sc = evalin('base','Sc');
-for i = 1 : 2
-    [gcp(: , : , i), icp(: , : , i), fc] = fndicp(points(: , : , i), Sc);
-end
 
 %===== Loading look angles into one column array =====
 XLOS_0 = evalin('base', 'XLOS_0');
@@ -30,57 +19,63 @@ XLOS_1 = evalin('base', 'XLOS_1');
 YLOS_0 = evalin('base', 'YLOS_0');
 LOS    = [XLOS_0; XLOS_1; YLOS_0];
 
-%===== Each parameters into one variable (array format) =====
+%===== Select functional model ID =====
+model_id = 3;
+fprintf(fid, 'Functional Model ID: %1d \n\n', model_id);
+
+%===== GCP-ICP separation =====
+Spc
+Sp = evalin('base','Sp');
+Sc = evalin('base','Sc');
+if Sc(1) > 0
+    for i = 1 : number_images
+        [gcp(: , : , i), icp(: , : , i), fc] = fndicp(points(: , : , i), Sc); %#ok<ASGLU,AGROW>
+    end
+end
+
+%===== Each EOPs into one variable (array format) =====
 unknwn = P2U;
 
-%===== Estimation of ~XYZ for all points via raw parameters =====
-points = est_XYZ(points, LOS, 0 , model_id);
-% pltv(points, 0 , 0)
+%===== Estimation of ~XYZ for all points via raw look angles and EOPs =====
+points = est_XYZ(points, LOS, 0 , model_id); %#ok<NASGU>
 
-%===== Load parameter set (Sp) and check point IDs (Sc) =====
-Spc
-Sp  = evalin('base', 'Sp');
-Sc  = evalin('base', 'Sc');
+%===== Pre-adjustment for LOS angles =====
+preq = 1;%input('Apply pre-adjustment? N: 0, Y: 1 >> ');
+if preq == 1 && (model_id == 1 || model_id == 3)
+    [LOS, gcp, icp] = preadj(gcp, icp, unknwn, LOS, model_id); fprintf(fid, 'Pre-adjustment for LOS angles was applied.\n\n');
+    gcp = est_XYZ(gcp, LOS, 1, model_id); %Estimation of ~XYZ of GCPs via pre-adjusted LOS angles
+    icp = est_XYZ(icp, LOS, 2, model_id); %Estimation of ~XYZ of ICPs via pre-adjusted LOS angles
+    points = [gcp ; icp];
+    for j = 1 : number_images
+        points(: , : , j) = sortrows(points(: , : , j), 1);
+    end
+    pltv(points, Sc(1), 1)
+end
 
 %% ===== I T E R A T I O N =====
-for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n', j);
-    
-    %===== Pre-adjustment for LOS angles =====
-    if j == 1
-        preq = 1;%input('Apply pre-adjustment? N: 0, Y: 1 >> ');
-        if preq == 1 && (model_id == 1 || model_id == 3)
-            [LOS, gcp, icp] = preadj(gcp, icp, unknwn, LOS, model_id); fprintf(fid, 'Pre-adjustment for LOS angles was applied.\n\n');
-            gcp = est_XYZ(gcp, LOS, 1, model_id); %Estimation of ~XYZ of GCPs via pre-adjusted LOS angles
-            icp = est_XYZ(icp, LOS, 2, model_id); %Estimation of ~XYZ of ICPs via pre-adjusted LOS angles
-            points = [gcp ; icp];
-            for j = 1 : 2;
-                points(: , : , j) = sortrows(points(: , : , j), 1);
-            end
-%             pltv(points, Sc(1), 1)
-        end
-    end
-    
+iteration_limit = 1; if iteration_limit == 1; display('Attention! Total iteration = 1'); end
+for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n', j);    
     %===== Jacobian matrix of EOPs =====
     if exist('Sp','var') == 1
-        for i = 1 : 2
+        for i = 1 : number_images
             AEOP_u(: , : , i) = A_EOP_u(unknwn(: , i), LOS(:, i), points(: , : , i), model_id);
         end
-        AEOP = [AEOP_u(: , : , 1)              zeros(size(AEOP_u(: , : , 1))); 
-                zeros(size(AEOP_u(: , : , 1))) AEOP_u(: , : , 2)           ];
+        AEOP = blkdiag(AEOP_u(: , : , 1), AEOP_u(: , : , 2));
+        if number_images == 3
+            AEOP = blkdiag(AEOP, AEOP_u(: , : , 3));
+        end
     end
-        
-    %===== Termination by linear dependency =====
-%     assignin('base','rank_AEOP', rank(AEOP))
-%     disperror
-    
-    %===== Jacobian matrix of dXYZ =====
+    assignin('base','AEOP',AEOP)
+    %===== Jacobian matrix of dXYZ of ICPs =====
     if Sc(1) > 0
-        for i = 1 : 2
+        for i = 1 : number_images
             AXYZ_u(:, : , i) = A_dXYZ(unknwn(: , i), points(: , : , i), fc, LOS(: , i), model_id);
         end
-        AXYZ  = [AXYZ_u(: , : , 1); AXYZ_u(: , : , 2)];
+        AXYZ = [AXYZ_u(: , : , 1); AXYZ_u(: , : , 2)];
+        if number_images == 3
+            AXYZ = [AXYZ; AXYZ_u(: , : , 3)];
+        end
     end
-    
     %===== Combination of Jacobian matrices =====
     if (exist('Sp','var') == 1) && (Sc(1) == 0)
         A = AEOP;
@@ -89,12 +84,9 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     elseif (exist('Sp','var') == 1) && (Sc(1) > 0)
         A = [AEOP AXYZ];
     end
-    assignin('base', 'A', A)
-    assignin('base','AEOP', AEOP)
-    assignin('base', 'AXYZ', AXYZ)
-    
+  
     %===== Jacobian matrix of look angles and absolute term vectors ====
-    for i = 1 : 2
+    for i = 1 : number_images
         if model_id == 1
             B1(: , : , i) = Jacobian_LA_1(unknwn(: , i) , LOS , points(: , : , i));
             w1(: , i)     = atv_1(unknwn(: , i) , LOS, points(: , : , i));
@@ -105,18 +97,17 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
             w1(: , i)     = atv_3(unknwn(: , i) , points(: , : , i), 0);
         end
     end
-    
-    B = [B1(: , : , 1)                zeros(size(B1(: , : , 1)));
-         zeros(size(B1(: , : , 1)))   B1(: , : , 2)            ];
-    
-    assignin('base','B',B)
-    
-    w = [w1(: , 1) ; w1(: , 2)]; %column array
-    
-    assignin('base','w',w)
-    
+    B = blkdiag(B1(: , : , 1), B1(: , : , 2));
+    if number_images == 3
+        B = blkdiag(B, B1(: , : , 3));
+    end
+    %===== Misclosure vector =====
+    w = [w1(: , 1) ; w1(: , 2)];
+    if number_images == 3
+        w = [w ; w1(: , 3)];%column array
+    end
     if model_id == 2
-        for i = 1 : 2
+        for i = 1 : 3
             for j = 1 : length(points(:,1))
                 lpsi(2 * j - 1 , i) = points(j , 16 , i);
                 lpsi(2 * j ,     i) = points(j , 17 , i);
@@ -124,31 +115,25 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         end
         dl = [lpsi(:,1) ; lpsi(:,2)] - w;
     end
-
 %%  %===== Calculation of dx, k, v =====
-    [mm nn] = size(A' * inv(B * B') * A);
-    
-% eig(A' * A)
-% eig(A' * inv(B * B') * A)
-    lamda = 0;%input('lamda= ');
+    [mm , nn] = size(A' * (B * B') * A);
+    eig(A' * ((B * B') \ A))
+    lamda = input('lamda= ');
     if model_id == 1 || model_id == 3
-        if lamda ~= 0
-            Qxx =   inv(A' * ((B * B') \ A) + lamda * eye(mm , nn)); fprintf(fid, 'Parameter estimation: Tikhonov regularization\n\n');
-        elseif lamda == 0
-            Qxx = inv(A' * ((B * B') \ A)); fprintf(fid, 'Parameter estimation: Cayley\n\n');
+            Qxx =   inv(A' * ((B * B') \ A) + lamda * eye(mm , nn)); if lamda ~= 0; fprintf(fid, 'Parameter estimation: Tikhonov regularization\n\n');end
 %             Qxx = pinv(A' * inv(B * B') * A); fprintf(fid, 'Parameter estimation: Moore-Penrose (pseudo) inversion\n\n');
 %             Qxx = cholesky_ters(A' * inv(B * B') * A + lamda * eye(mm , nn)); fprintf(fid, 'Parameter estimation: Cholesky inversion\n\n');
 %             Qxx = gauss_ters(A' * inv(B * B') * A + lamda * eye(mm , nn)); fprintf(fid, 'Parameter estimation: Gauss inversion\n\n');
 %             Qxx = pivot(A' * inv(B * B') * A); fprintf(fid, 'Parameter estimation: Pivoting\n\n');
-        end
         dx  = - Qxx * A' * ((B * B') \ w);
+        assignin('base','dx',dx);
         korelat = - (B * B') \ (A * dx + w);
     elseif model_id == 2
-        dx = inv(A' * A) * A' * dl;
+        dx = (A' * A) \ (A' * dl);
         v1 = A * dx - dl;
     end
         v1      = B' * korelat;
-%         for unnecessary = 1 : 1
+        for unnecessary = 1 : 1
 %         AB = [A B];
 %         dall = - pinv(AB) * w;
     
@@ -163,35 +148,39 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
 %         dall = pinv(A + lamda2 * eye (size(A))) * [AEOP'; AXYZ'; B'] * w;
 %         dx = dall(1 : (2 * length(Sp) + 3 * length(Sc)));
 %         v1 = dall((2 * length(Sp) + 3 * length(Sc) + 1) : length(dall));
-%         end
-
-%%     %===== Validation of EOPs =====
-%     [tsnc, kor] = par_valid(A, v1, dx, Qxx, Sc);
+        end
+        
+        %===== Validation of EOPs =====
+%         [tsnc, kor] = par_valid(A, v1, dx, Qxx, Sc);
     
     %===== Correction of EOPs =====
     if exist('Sp', 'var') == 1
         for k = 1 : length(Sp)
-            for i = 1 : 2
-                subunknwn (k , i) = unknwn(Sp(k) , i); % Selection of EOPs to be corrected.
+            for i = 1 : number_images
+                subunknwn(k , i) = unknwn(Sp(k) , i); %Selection of EOPs to be corrected.
             end
         end
-
-        tunknwn = [subunknwn(: , 1); subunknwn(: , 2)] + dx(1 : 2 * length(Sp)); % Correction of EOPs to be selected.
-
-        %===== Corrected EOPs are reloaded =====
+        if number_images == 2
+        tunknwn = [subunknwn(: , 1); subunknwn(: , 2)] + dx(1 : number_images * length(Sp)); %Correction of EOPs to be selected.
+        elseif number_images == 3
+            tunknwn = [subunknwn(: , 1); subunknwn(: , 2); subunknwn(: , 3)] + dx(1 : number_images * length(Sp));
+        end
+        %===== Corrected EOPs are reloaded into unknown vector =====
         for k = 1 : length(Sp)
             unknwn(Sp(k) , 1) = tunknwn(k);
             unknwn(Sp(k) , 2) = tunknwn(length(Sp) + k);
+            if number_images == 3
+                unknwn(Sp(k) , 3) = tunknwn(2 * length(Sp) + k);
+            end
         end
     end
-    
     %===== Correction of look angles =====
     if model_id == 1
         LOS = LOS + reshape(v1, [3 , 2]);
     elseif model_id == 2 || model_id == 3
-        v2 = reshape(v1 , 2 * length(points(: , 1 , 1)) , 2);
+        v2 = reshape(v1 , 2 * length(points(: , 1 , 1)) , number_images);
         for i = 1 : length(points(: , 1 , 1))
-            for j = 1 : 2
+            for j = 1 : number_images
                 if model_id == 2
                     points(i , 16 , j) = points(i , 16 , j) + v2(2 * i - 1 , j);
                     points(i , 17 , j) = points(i , 17 , j) + v2(2 * i     , j);
@@ -204,31 +193,56 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     end
 
 %% ===== Calculation of RMSE on GCP/ICPs =====
-    if Sc(1) > 0
-        [gcp1, icp1, fc] = fndicp(points(: , : , 1), Sc);
-        [gcp2, icp2, fc] = fndicp(points(: , : , 2), Sc);
-    elseif Sc == 0
-        gcp1 = points(: , : , 1);
-        gcp2 = points(: , : , 2);
-        icp1 = 0;
-        icp2 = 0;
-    end 
-    est_XYZ_u(unknwn, LOS, gcp1, gcp2, fid, model_id, icp1, icp2);
-    
-    points = evalin('base', 'points');
-    
+    if Sc == 0
+        for i = 1 : number_images
+            gcp(: , : , i) = points(: , : , i);
+            icp(: , : , i) = 0;
+        end
+    end
+    unknwn_12 = unknwn(: , 1 : 2);%Select unknown
+    points_12 = est_XYZ_u(unknwn_12, LOS, gcp(: , : , 1), gcp(: , : , 2), icp(: , : , 1), icp(: , : , 2), fid, model_id);
+    assignin('base','points_12',points_12)
+    assignin('base','unknwn_12',unknwn_12)
+    if number_images == 3
+        unknwn_13 = [unknwn(: , 1) unknwn(: , 3)];%Select unknown
+        points_13 = est_XYZ_u(unknwn_13, LOS, gcp(: , : , 1), gcp(: , : , 3), icp(: , : , 1), icp(: , : , 3), fid, model_id);
+        assignin('base','points_13',points_13)
+        assignin('base','unknwn_13',unknwn_13)
+        unknwn_23 = [unknwn(: , 2) unknwn(: , 3)];%Select unknown
+        points_23 = est_XYZ_u(unknwn_23, LOS, gcp(: , : , 2), gcp(: , : , 3), icp(: , : , 2), icp(: , : , 3), fid, model_id);
+        assignin('base','points_23',points_23)
+        assignin('base','unknwn_23',unknwn_23)
+        
+        %Mean values from two variances
+        points(: , 13 : 15 , 1) = (points_12(: , 13 : 15 , 1) + points_13(: , 13 : 15 , 1)) / 2;
+        points(: , 13 : 15 , 2) = (points_12(: , 13 : 15 , 2) + points_23(: , 13 : 15 , 1)) / 2;
+        points(: , 13 : 15 , 3) = (points_13(: , 13 : 15 , 2) + points_23(: , 13 : 15 , 2)) / 2;
+        
+        %Calculate mean values for triplet
+        for i = 1 : length(points(: , 1 , 1))
+            for j = 1 : number_images
+                points(i , 12 + j , 1) = sum(points(i , 12 + j , :)) / 3;
+            end
+        end
+        points(: , : , 2) = points(: , : , 1);
+        points(: , : , 3) = points(: , : , 1);
+    end
     %===== Correction of XYZ of ICPs =====
     if Sc(1) > 0
-        dc = reshape(dx(2 * length(Sp) + 1 : length(dx)), 3, length(Sc));
+        dc = reshape(dx(number_images * length(Sp) + 1 : length(dx)), 3, length(Sc));%Export the dXYZ from dx vector 
         dc = dc';
-        assignin('base', 'dc', dc)
+        assignin('base','dc',dc)
         
+        %Add misfits to ICP's approximate coordinates
         for  k = 1 : length(fc)
             points(fc(k) , 13 : 15 , 1) = points(fc(k) , 13 : 15 , 1) + dc(k , :);
         end
-        
         points(: , : , 2) = points(: , : , 1);
-
+        if number_images == 3
+            points(: , : , 3) = points(: , : , 1);
+        end
+        
+        %Estimate shift between corrected and ground-truth coordinates of ICP's
         for  k = 1 : length(fc)
             dicp(k , :) = points(fc(k), 4 : 6 , 1) - points(fc(k), 13 : 15 , 1);
         end
@@ -245,8 +259,8 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', micp);
     end
     
-    %===== Checking =====
-    for i = 1 : 2
+    %%===== Checking =====
+    for i = 1 : number_images
         if model_id == 1
             differ_w(: , i) = atv_1(unknwn(: , i), LOS, points(: , : , i)); % Must be same in the w estimation.
         elseif model_id == 3
@@ -263,6 +277,6 @@ end
 
 %% ===== Plotting =====
 pltv(points, Sc(1), 3)
-
+assignin('base', 'points', points)
 % ===== Clossing file =====
 % fclose(fid);

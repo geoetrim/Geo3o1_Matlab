@@ -11,7 +11,9 @@ Ps_coef = evalin('base', 'Ps_coef');
 
 Q = evalin('base', 'Q');
 
-for i = 1 : 2
+number_images = evalin('base','number_images');
+
+for i = 1 : number_images
     unknwn( 1 , i) = t_start (i);
     unknwn( 2 , i) = t_period(i);
     unknwn( 3 , i) = t_offset(i);
