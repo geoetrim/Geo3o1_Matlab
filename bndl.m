@@ -226,6 +226,17 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         end
         points(: , : , 2) = points(: , : , 1);
         points(: , : , 3) = points(: , : , 1);
+        
+        [gcp_triplet(: , :), ~, ~] = fndicp(points(: , : , 1), Sc);
+        
+        dgcp_triplet = gcp_triplet(: , 4 : 6) - gcp_triplet(: , 13 : 15);
+        
+        for i = 1 : 3
+            mgcp_triplet(i) = sqrt((dgcp_triplet(: , i)' * dgcp_triplet(: , i)) / length(dgcp_triplet(: , 1)));
+        end
+        fprintf(fid,'RMSE at GCPs after bundle adjustment for triplet set\n');
+        fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', mgcp_triplet);
+        assignin('base', 'mgcp_triplet', mgcp_triplet)
     end
     %===== Correction of XYZ of ICPs =====
     if Sc(1) > 0
