@@ -4,7 +4,11 @@
 
 function bndl
 
+<<<<<<< HEAD:bndl.m
+%% ===== Definition and loading =====
+=======
 %% ===== D E F I N A T I O N S and L O A D I N G =====
+>>>>>>> b5027191183716bdef6b8fd73646df287573bfdc:Geo3o1_3_1/bndl.m
 number_images = evalin('base','number_images');
 
 %===== Loading file id =====
@@ -49,7 +53,11 @@ if preq == 1 && (model_id == 1 || model_id == 3)
     for j = 1 : number_images
         points(: , : , j) = sortrows(points(: , : , j), 1);
     end
+<<<<<<< HEAD:bndl.m
+    pltv(points, 1)
+=======
     pltv(points, Sc(1), 1)
+>>>>>>> b5027191183716bdef6b8fd73646df287573bfdc:Geo3o1_3_1/bndl.m
 end
 
 %% ===== I T E R A T I O N =====
@@ -117,8 +125,13 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     end
 %%  %===== Calculation of dx, k, v =====
     [mm , nn] = size(A' * (B * B') * A);
+<<<<<<< HEAD:bndl.m
+%     eig(A' * ((B * B') \ A))
+    lamda = 0;%input('lamda= ');
+=======
     eig(A' * ((B * B') \ A))
     lamda = input('lamda= ');
+>>>>>>> b5027191183716bdef6b8fd73646df287573bfdc:Geo3o1_3_1/bndl.m
     if model_id == 1 || model_id == 3
             Qxx =   inv(A' * ((B * B') \ A) + lamda * eye(mm , nn)); if lamda ~= 0; fprintf(fid, 'Parameter estimation: Tikhonov regularization\n\n');end
 %             Qxx = pinv(A' * inv(B * B') * A); fprintf(fid, 'Parameter estimation: Moore-Penrose (pseudo) inversion\n\n');
@@ -287,7 +300,11 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
 end
 
 %% ===== Plotting =====
+<<<<<<< HEAD:bndl.m
+pltv(points, 2)
+=======
 pltv(points, Sc(1), 3)
+>>>>>>> b5027191183716bdef6b8fd73646df287573bfdc:Geo3o1_3_1/bndl.m
 assignin('base', 'points', points)
 % ===== Clossing file =====
 % fclose(fid);
