@@ -4,7 +4,10 @@
 
 function [tsnc, kor] = par_valid (A, v, dx, Qxx, Sc)
 
-if Sc == 0
+%===== Loading file id =====
+fid = evalin('base', 'fid');
+
+if Sc == 0 %ICP is not available.
     nSc = 0;
 elseif Sc > 0
     nSc = length(Sc);
@@ -30,9 +33,18 @@ for i = 1 : length (dx)
         tsnc (i) = 1; %valid
     end
 end
+tscn_Sp = tsnc(1 : (length (dx) - 3 * nSc));
 
-%Showing the validation of EOPs
-tsnc (1 : (length (dx) - 3 * nSc));
+%Writting the validation of EOPs into file.
+fprintf(fid,'Validation of EOPs:\n');
+for i = 1 : length(tscn_Sp)
+    if tscn_Sp == 1
+        fprintf(fid,'%d th EOP is valid.\n', i);
+    elseif tscn_Sp == 0
+        fprintf(fid,'%d th EOP is invalid.\n', i);
+    end
+end
+fprintf(fid,'\n');
 
 %Estimating the correlation among EOPs
 for i = 1 : (length(Qxx) - 3 * nSc)
@@ -41,3 +53,15 @@ for i = 1 : (length(Qxx) - 3 * nSc)
     end
 end
 assignin('base','kor', kor)
+
+%Writting the correlation among EOPs into file.
+fprintf(fid,'Correlation among EOPs:\n');
+for i = 1 : (length(Qxx) - 3 * nSc)
+    for j = 1 : (length(Qxx) - 3 * nSc)
+        fprintf(fid,'%+1.2f ', kor(i , j));
+        if j == (length(Qxx) - 3 * nSc);
+            fprintf(fid,'\n');
+        end
+    end
+end
+fprintf(fid,'\n');

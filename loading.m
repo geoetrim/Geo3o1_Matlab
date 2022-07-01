@@ -3,7 +3,7 @@
 function loading(i)
 if i == 1
     display('===== Choose sensor =====')
-    sensor_id = input('\n Pléiades 1A&1B: 1 \n SPOT 6&7      : 2 \n Göktürk 1     : 3 \n\n Choice        : '); assignin('base', 'sensor_id', sensor_id)
+    sensor_id = input('\n Pléiades 1A&1B: 1 \n SPOT 6&7      : 2 \n Göktürk-1     : 3 \n\n Choice        : '); assignin('base', 'sensor_id', sensor_id)
 elseif i > 1
     sensor_id = evalin('base','sensor_id');
 end

@@ -1,36 +1,72 @@
 %Parameter and check point selection
-%Recoded by Hüseyin Topan, BEÜ, 2017
+%Recoded by Prof. Hüseyin Topan, ZBEÜ, 2022
 
 function Spc
+sensor_id = evalin('base','sensor_id');
+fid = evalin('base', 'fid');
 
-% Sc = 0;
-
-%% ===== Check point selection for Pléiades 1A Zonguldak =====
-Sc = [2 18 21 46 62 86 90 158 221];
-% Sc = [3 61 90 124 158 176 205 228 249 268];
-% Sc = [3 18 21 31 46 61 70 86 90 96 108 124 158 176 188 205 251 228 249 263 268 275 292 299 306];
-% Sc = [3 18 21 28 31 46 54 61 70 86 90 96 108 124 141 158 176 188 205 228 249 251 255 263 268 275 292 294 299 306];
-% Sc = [3 24 25 31 35 40 46 55 63 70 72 74 79 85 90 91 96 100 106 112 117 118 120 123 135 146 158 167 170 177 185 186 195 199 207 216 220 223 249 251 255 258 261 269 275 292 294 304 306 2621];
-% Sc = [3 15 18 19 24 25 30 31 33 35 40 46 55 58 61 63 70 72 74 80 85 90 91 93 96 97 100 106 111 117 118 120 123 124 135 146 158 167 170 176 178 185 186 195 199 207 216 220 223 246 249 251 255 258 261 269 274 275 292 294 304 306 1871 1911 2621];
-%% ===== Check point selection for Pléiades 1A Karaman =====
-%Sc = 0;
-% Sc = [23 54 61];
-% Sc = [23 54 61 176 202];
-% Sc = [1 20 23 37 39 54 61 67 77 82 99 127 138 142 149 151 156 168 176 180 184 205 210 212 216 222 224 9018 9025];
-
-%% ===== Check point selection for Göktürk 1 Zonguldak =====
-% Sc = [2 18 21 46 62 86 90 158 221];
+if sensor_id == 1
+    %% ===== Check point selection for Pléiades 1A Zonguldak =====
+    Sc = [24 47 98 170 207 228 261 268 271 302];
+%     Sc = [15 24 047 54 72 098 100 112 0170 183 0207 224 0228 239 248 0261 0268 0271 289 0302];
+    %% ===== Check point selection for Pléiades 1A Karaman =====
+%     Sc = [23];
+elseif sensor_id == 2
+    %% ===== Check point selection for SPOT 6 Zonguldak =====
+    Sc = [24 47 98 170 207 22 218 302 510 514];
+%     Sc = [15 24 047 54 72 098 100 112 0170 183 0207 224 0228 239 248 0261 0268 0271 289 0302];
+elseif sensor_id == 3
+    %% ===== Check point selection for Göktürk 1 Zonguldak =====
+%     Sc = [19 33 71 58 89 207 216 260];
+    Sc = [6 19 33 71 58 80 84 89 97 120 186 207 216 260];
+end
 
 assignin('base', 'Sc', Sc)
 
 %% ===== Parameter selection =====
 % Select parameter(s)
-Sp = [1 2];
+Sp = [1 : 4];
 assignin('base', 'Sp', Sp)
 
-%  1 t_start
-%  2 t_period 
-%  3 t_offset  
+fprintf(fid,'Selected EOPs:\n');
+
+for i = 1 : length(Sp)
+    if Sp(i) == 1; fprintf(fid,' 1 t_start \n');
+        elseif Sp(i) == 2;  fprintf(fid,' 2 t_period \n');
+        elseif Sp(i) == 3;  fprintf(fid,' 3 t_offset \n');
+        elseif Sp(i) == 4;  fprintf(fid,' 4 t_scale  \n');
+        elseif Sp(i) == 5;  fprintf(fid,' 5 Xs0      \n');
+        elseif Sp(i) == 6;  fprintf(fid,' 6 Xs1      \n');
+        elseif Sp(i) == 7;  fprintf(fid,' 7 Xs2      \n');
+        elseif Sp(i) == 8;  fprintf(fid,' 8 Ys0      \n');
+        elseif Sp(i) == 9;  fprintf(fid,' 9 Ys1      \n');
+        elseif Sp(i) == 10; fprintf(fid,'10 Ys2      \n');
+        elseif Sp(i) == 11; fprintf(fid,'11 Zs0      \n');
+        elseif Sp(i) == 12; fprintf(fid,'12 Zs1      \n');
+        elseif Sp(i) == 13; fprintf(fid,'13 Zs2      \n');
+        elseif Sp(i) == 14; fprintf(fid,'14 Q0_0     \n');
+        elseif Sp(i) == 15; fprintf(fid,'15 Q0_1     \n');
+        elseif Sp(i) == 16; fprintf(fid,'16 Q0_2     \n');
+        elseif Sp(i) == 17; fprintf(fid,'17 Q0_3     \n');
+        elseif Sp(i) == 18; fprintf(fid,'18 Q1_0     \n');
+        elseif Sp(i) == 19; fprintf(fid,'19 Q1_1     \n');
+        elseif Sp(i) == 20; fprintf(fid,'20 Q1_2     \n');
+        elseif Sp(i) == 21; fprintf(fid,'21 Q1_3     \n');
+        elseif Sp(i) == 22; fprintf(fid,'22 Q2_0     \n');
+        elseif Sp(i) == 23; fprintf(fid,'23 Q2_1     \n');
+        elseif Sp(i) == 24; fprintf(fid,'24 Q2_2     \n');
+        elseif Sp(i) == 25; fprintf(fid,'25 Q2_3     \n');
+        elseif Sp(i) == 26; fprintf(fid,'26 Q3_0     \n');
+        elseif Sp(i) == 27; fprintf(fid,'27 Q3_1     \n');
+        elseif Sp(i) == 28; fprintf(fid,'28 Q3_2     \n');
+        elseif Sp(i) == 29; fprintf(fid,'29 Q3_3     \n');
+    end
+end
+fprintf(fid,'\n');
+        
+%  1 t_period
+%  2 t_offset
+%  3 t_scale
 %  4 t_scale
 % 
 %  5 Xs0    6 Xs1    7 Xs2 
