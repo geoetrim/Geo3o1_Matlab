@@ -7,14 +7,14 @@ fid = evalin('base', 'fid');
 
 if sensor_id == 1
     %% ===== Check point selection for Pléiades 1A Zonguldak =====
-    Sc = [24 47 98 170 207 228 261 268 271 302];
-%     Sc = [15 24 047 54 72 098 100 112 0170 183 0207 224 0228 239 248 0261 0268 0271 289 0302];
+%     Sc = [24 47 98 170 207 228 261 268 271 302];
+    Sc = [15 24 47 54 72 098 100 112 0170 183 0207 224 0228 239 248 0261 0268 0271 289 0302];
     %% ===== Check point selection for Pléiades 1A Karaman =====
-%     Sc = [23];
+%     Sc = [134 149 202 219 9025];
 elseif sensor_id == 2
     %% ===== Check point selection for SPOT 6 Zonguldak =====
     Sc = [24 47 98 170 207 22 218 302 510 514];
-%     Sc = [15 24 047 54 72 098 100 112 0170 183 0207 224 0228 239 248 0261 0268 0271 289 0302];
+%     Sc = [15 24 047 54 72 098 100 112 0170 183 207 224 0228 239 248 0261 0268 0271 289 0302];
 elseif sensor_id == 3
     %% ===== Check point selection for Göktürk 1 Zonguldak =====
 %     Sc = [19 33 71 58 89 207 216 260];
@@ -25,7 +25,7 @@ assignin('base', 'Sc', Sc)
 
 %% ===== Parameter selection =====
 % Select parameter(s)
-Sp = [1 : 4];
+Sp = [1];
 assignin('base', 'Sp', Sp)
 
 fprintf(fid,'Selected EOPs:\n');

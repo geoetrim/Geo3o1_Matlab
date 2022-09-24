@@ -3,6 +3,8 @@
 
 function point = est_XYZ_u(unknwn, LOS, gcp1, gcp2, icp1, icp2, fid, model_id)
 
+number_images = evalin('base','number_images');
+
 % ===== Estimation of GCPs via stereo intersection =====
 for i = 1 : length(gcp1(: , 1));
     
@@ -30,7 +32,9 @@ assignin('base', 'dgcp', dgcp)
 for i = 1 : 3
     mgcp(i) = sqrt((dgcp(: , i)' * dgcp(: , i)) / length(dgcp(: , 1)));
 end
-fprintf(fid,'RMSE at GCPs after bundle adjustment\n');
+if number_images == 2
+    fprintf(fid,'RMSE at GCPs after bundle adjustment\n');
+end
 fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', mgcp);
 assignin('base', 'mgcp', mgcp)
 

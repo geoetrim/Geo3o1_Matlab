@@ -1,14 +1,18 @@
 3D georeferencing of Pléiades 1A&1B primary, SPOT 6&7 primary and Göktürk 1 L2A tri-stereo images by Prof. Hüseyin TOPAN, Dr. Gürsu AYTEKÝN, Zonguldak Bülent Ecevit University, December 2020, Zonguldak, Turkey
 
-Date: 2022  7  1 14 10 12
+Date: 2022  9 24 12 42 43
 
-1. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269koor_GCP_XYZ.txt 
+1. Point file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269koor_GCP_XYZ.txt 
 
-1. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269.XML 
+1. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269.XML 
 
-2. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283koor_GCP_XYZ.txt 
+2. Point file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283koor_GCP_XYZ.txt 
 
-2. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283.XML 
+2. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283.XML 
+
+3. Point file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\284koor_GCP_XYZ.txt 
+
+3. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\284.XML 
 
 Ignored points:
 1 3 14 17 18 19 25 27 28 30 31 32 33 34 35 37 43 45 46 50 51 52 55 58 59 61 62 63 64 65 66 70 71 74 78 80 82 83 85 89 91 93 94 96 97 104 106 111 114 117 118 120 122 123 124 134 138 141 143 146 167 168 176 178 185 195 246 247 249 251 252 255 259 272 274 275 276 293 294 306 2591 
@@ -17,103 +21,112 @@ Functional Model ID: 3
 
 Selected EOPs:
  1 t_start 
- 2 t_period 
- 3 t_offset 
- 4 t_scale  
 
-RMSE of all points via direct georeferencing
-mX = ±    3.0609622623 (m)
-mY = ±    7.6060489038 (m)
-mZ = ±    2.3543845199 (m)
+RMSE of all points via direct georeferencing using 1. and 2. images
+mX = ±    3.0609622625 (m)
+mY = ±    7.6060489039 (m)
+mZ = ±    2.3543845202 (m)
 
-Pre-adjustment for LOS angles was applied.
+RMSE of all points via direct georeferencing using 1. and 3. images
+mX = ±    2.1232654666 (m)
+mY = ±    8.3633144308 (m)
+mZ = ±    3.3714338905 (m)
 
-RMSE of GCPs via direct georeferencing following pre-adjustment
-mX = ±    0.0003524544 (m)
-mY = ±    0.0000373923 (m)
-mZ = ±    0.0003405787 (m)
+RMSE of all points via direct georeferencing using 2. and 3. images
+mX = ±    2.3156618383 (m)
+mY = ±    7.9933572064 (m)
+mZ = ±    2.4921984635 (m)
 
-RMSE of ICPs via direct georeferencing following pre-adjustment
-mX = ±    0.6686857915 (m)
-mY = ±    0.6607457368 (m)
-mZ = ±    0.7833158749 (m)
+RMSE of all points via direct georeferencing using triplet images
+mX = ±    2.3519053878 (m)
+mY = ±    7.9769283607 (m)
+mZ = ±    2.5356365466 (m)
 
-Bundle adjustment iteration:  1 
-
-Parameter estimation: Tikhonov regularization
-
-Validation of EOPs:
-1 th EOPS is invalid.
-2 th EOPS is invalid.
-3 th EOPS is invalid.
-4 th EOPS is invalid.
-5 th EOPS is invalid.
-6 th EOPS is invalid.
-7 th EOPS is invalid.
-8 th EOPS is invalid.
-
-Correlation among EOPs:
-Functional Model ID: 3 
-
-Selected EOPs:
- 1 t_start 
- 2 t_period 
- 3 t_offset 
- 4 t_scale  
-
-RMSE of all points via direct georeferencing
-mX = ±    3.0609622623 (m)
-mY = ±    7.6060489038 (m)
-mZ = ±    2.3543845199 (m)
+----------------------------------------------
 
 Pre-adjustment for LOS angles was applied.
 
-RMSE of GCPs via direct georeferencing following pre-adjustment
-mX = ±    0.0003524544 (m)
-mY = ±    0.0000373923 (m)
-mZ = ±    0.0003405787 (m)
+RMSE of GCPs via direct georeferencing using 1. and 2. images following pre-adjustment
+mX = ±    0.0003650826 (m)
+mY = ±    0.0000386655 (m)
+mZ = ±    0.0003436765 (m)
 
-RMSE of ICPs via direct georeferencing following pre-adjustment
-mX = ±    0.6686857915 (m)
-mY = ±    0.6607457368 (m)
-mZ = ±    0.7833158749 (m)
+RMSE of GCPs via direct georeferencing using 1. and 3. images following pre-adjustment
+mX = ±    0.0001562446 (m)
+mY = ±    0.0000689978 (m)
+mZ = ±    0.0005790987 (m)
+
+RMSE of GCPs via direct georeferencing using 2. and 3. images following pre-adjustment
+mX = ±    0.0002477811 (m)
+mY = ±    0.0000273669 (m)
+mZ = ±    0.0004452549 (m)
+
+RMSE of GCPs via direct georeferencing following pre-adjustment for triplet
+mX = ±    0.0002558891 (m)
+mY = ±    0.0000268374 (m)
+mZ = ±    0.0004545308 (m)
+
+----------------------------------------------
+
+RMSE of ICPs via direct georeferencing using 1. and 2. images following pre-adjustment
+mX = ±    0.6342042020 (m)
+mY = ±    0.6668822238 (m)
+mZ = ±    0.6783559427 (m)
+
+RMSE of ICPs via direct georeferencing using 1. and 3. images following pre-adjustment
+mX = ±    1.1281312847 (m)
+mY = ±    0.6019930764 (m)
+mZ = ±    1.2788673175 (m)
+
+RMSE of ICPs via direct georeferencing using 2. and 3. images following pre-adjustment
+mX = ±    0.6579588321 (m)
+mY = ±    0.5724549958 (m)
+mZ = ±    0.5777625126 (m)
+
+RMSE of ICPs via direct georeferencing following pre-adjustment for triplet
+mX = ±    0.6246003499 (m)
+mY = ±    0.5526784294 (m)
+mZ = ±    0.6088321113 (m)
+
+----------------------------------------------
 
 Bundle adjustment iteration:  1 
 
-Parameter estimation: Tikhonov regularization
-
 Validation of EOPs:
-1 th EOPS is invalid.
-2 th EOPS is invalid.
-3 th EOPS is invalid.
-4 th EOPS is invalid.
-5 th EOPS is invalid.
-6 th EOPS is invalid.
-7 th EOPS is invalid.
-8 th EOPS is invalid.
 
 Correlation among EOPs:
-+1.00 -0.47 +0.55 -0.47 +0.00 -0.00 -0.00 +0.00 
--0.47 +1.00 +0.47 +1.00 -0.00 +0.00 +0.00 -0.00 
-+0.55 +0.47 +1.00 +0.47 -0.00 +0.00 +0.00 -0.00 
--0.47 +1.00 +0.47 +1.00 +0.00 -0.00 -0.00 +0.00 
-+0.00 -0.00 -0.00 +0.00 +1.00 -0.47 +0.55 -0.47 
--0.00 +0.00 +0.00 -0.00 -0.47 +1.00 +0.47 +1.00 
--0.00 +0.00 +0.00 -0.00 +0.55 +0.47 +1.00 +0.47 
-+0.00 -0.00 -0.00 +0.00 -0.47 +1.00 +0.47 +1.00 
++1.00 +0.09 +0.09 
++0.09 +1.00 +0.06 
++0.09 +0.06 +1.00 
+Max correlation among look angles and EOPs:
++0.03 +0.03
++0.03 
+RMSE at GCPs for 1. and 2. images after bundle adjustment
+mX = ±    0.0359276277 (m)
+mY = ±    0.0220639947 (m)
+mZ = ±    0.0430925820 (m)
 
+RMSE at GCPs for 1. and 3. images after bundle adjustment
+mX = ±    0.0286175989 (m)
+mY = ±    0.0072058744 (m)
+mZ = ±    0.0318119033 (m)
 
-RMSE at GCPs after bundle adjustment
-mX = ±    0.0386916253 (m)
-mY = ±    0.0175206358 (m)
-mZ = ±    0.0408968961 (m)
+RMSE at GCPs for 2. and 3. images after bundle adjustment
+mX = ±    0.0315894196 (m)
+mY = ±    0.0147929933 (m)
+mZ = ±    0.0381585951 (m)
+
+RMSE at GCPs after bundle adjustment for triplet set
+mX = ±    0.0320448265 (m)
+mY = ±    0.0146873041 (m)
+mZ = ±    0.0376876141 (m)
 
 RMSE on ICPs after bundle adjustment
-mX = ±    0.6686278616 (m)
-mY = ±    0.6608027339 (m)
-mZ = ±    0.7834532500 (m)
+mX = ±    0.6239360545 (m)
+mY = ±    0.5559560167 (m)
+mZ = ±    0.5834097903 (m)
 
-Difference =      0.000 
+Difference =      0.001 
 
 ----------------------------------------------
 

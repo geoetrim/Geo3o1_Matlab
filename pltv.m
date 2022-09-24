@@ -6,6 +6,7 @@
 function pltv(points, process_id)
 
 gsd = evalin('base','gsd');
+number_images = evalin('base','number_images');
 divider = 10; %i.e. the image column is divided by 10
 formatSpec = '%.2f'; %Define decimals in scale plotting
 
@@ -13,14 +14,18 @@ formatSpec = '%.2f'; %Define decimals in scale plotting
 if process_id == 0
     gcp = points;
     dgcp = points(: , 4 : 6) - points(: , 13 : 15);
-else %if ICPs are existing
+elseif process_id > 0 %if ICPs are existing
     Sc = evalin('base', 'Sc');
     [gcp, icp, ~] = fndicp(points(: , : , 1), Sc);
-    dgcp = gcp(: , 4 : 6) - gcp(: , 13 : 15);
-    dicp = icp(: , 4 : 6) - icp(: , 13 : 15);
+    if process_id == 1
+        dgcp = gcp(: , 4 : 6) - gcp(: , 13 : 15);
+        dicp = icp(: , 4 : 6) - icp(: , 13 : 15);
+    elseif process_id == 2
+        dgcp = evalin('base','dgcp');%Normalde buna gerek kalmamasý, demet dengeleme sonrasýnda yukarýdakinde olduðu gibi YKN/BDN farklarýnýn nokta dosyasýndan okunup hesaplanmasý gerekiyor. Ama her nedense demet dengeleme sonunda çizim yaparken ön dengeleme sonrasý oluþan farklarý çizdiriyor. Þimdilik bu geçici çözüm uygulanmýþtýr. (23.09.2022)
+        dicp = evalin('base','dicp');
+    end
 end
-
-%% Define scale(s)
+%% Define scale(s) w.r.t. processes
 column_size = evalin('base','column_size');
 if process_id == 0
     mgcp = evalin('base','mdg_direct');
@@ -29,13 +34,14 @@ elseif process_id == 1 %For the pre-adjustment step
     micp = evalin('base','mdi'); %#ok<NASGU>
 elseif process_id == 2 %for the bundle adjustment step
     mgcp = evalin('base','mgcp'); %#ok<NASGU>
+    if number_images == 3
+        mgcp = evalin('base','mgcp_triplet');
+    end
     micp = evalin('base','micp'); %#ok<NASGU>
 end
-mo_gcp    = sqrt(mgcp * mgcp');
+mo_gcp    = sqrt(mgcp * mgcp'); %Estimation the 3D Euclidean distance
 scale_gcp = (column_size * gsd) / (divider * mo_gcp);
-if process_id == 2
-    scale_gcp = scale_gcp * 1e2;
-end
+
 if process_id > 0
     mo_icp    = sqrt(micp * micp');
     scale_icp = (column_size * gsd) / (divider * mo_icp);
@@ -74,15 +80,12 @@ set(hndl2,'MarkerSize',3);
 set(hndl2,'Color','black');
 set(hndl2,'LineWidth',1.5);
 %===== Scale plotting =====
-if process_id == 2 %Scale for GCPs is multiplied by 1e2
-    multiplier = 1e2;
-else multiplier = 1;
-end
-hndl4 = quiver((column_size * gsd) / divider, (column_size * gsd) / divider, (scale_gcp / multiplier) * mo_gcp, 0, 0, 'o');
+hndl4 = quiver(column_size / divider, column_size / divider, column_size / divider, 0, 0, 'o');
 set(hndl4,'LineWidth',1.5);
 set(hndl4,'MarkerSize',1.5);
 set(hndl4,'Color','black');
-text(2 * (column_size * gsd) / divider + (scale_gcp / multiplier) * mo_gcp, (column_size * gsd) / divider, num2str(mo_gcp), 'FontSize',15);
+% text(2 * (column_size * gsd) / divider + scale_gcp * mo_gcp, (column_size * gsd) / divider, num2str(mo_gcp), 'FontSize',15);
+text(2.5 * column_size / divider, column_size / divider, num2str(mo_gcp), 'FontSize',15);
 hold on
 %% ===== Plotting for ICPs =====
 if process_id > 0
@@ -97,9 +100,9 @@ if process_id > 0
     set(hndl7,'Color','black');
     set(hndl7,'LineWidth',1.5);
     %===== Scale plotting =====
-    hndl8 = quiver((column_size * gsd) / divider, (column_size * gsd) / divider, scale_icp * mo_icp, 0, 0, 'o');
+    hndl8 = quiver(column_size / divider, column_size / divider, column_size / divider, 0, 0, 'o');
     set(hndl8,'LineWidth',1.5);
     set(hndl8,'MarkerSize',1.5);
     set(hndl8,'Color','black');
-    text(2 * (column_size * gsd) / divider + scale_icp * mo_icp, 3 * (column_size * gsd) / divider, num2str(mo_icp, formatSpec), 'FontSize',15);
+    text(2.5 * column_size / divider, 2 * column_size / divider, num2str(mo_icp, formatSpec), 'FontSize',15);
 end

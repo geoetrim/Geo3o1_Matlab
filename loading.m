@@ -15,7 +15,7 @@ fid = evalin('base', 'fid');
 if i > 1
     points = evalin('base', 'points');
 end
-[FileName_points PathName_points] = uigetfile('*.*','Point File');
+[FileName_points PathName_points] = uigetfile('*.txt*','.gcp','Point File');
 p = load([PathName_points FileName_points]);
 points(:, :, i) = sortrows(p, 1);
 assignin ('base', 'points', points);

@@ -1,36 +1,57 @@
-function fid = blunder(gcp, v, dx, A, fid, mo, P, Qxx, scale)
+function fid = blunder
+% Blunder test for Geo3o1
+% Prof. Hüseyin Topan, ZBEÜ, July 2022
 
-%                 %%%%%% UYUÞUMSUZ ÖLÇÜ TESTÝ %%%%%%%
-%
+f   = length (A (: , 1)) - length (dx) - nSc; %degree of freedom
+mo  = sqrt ((v1' * v1) / f);
+Qvv = B' * B - B' * A * Qxx * A' * B; %Mikhail and Ackerman, 1971, page: 116  
+% Test value for Pope method
+for i = 1 : length(v1)
+    T_Pope(i) = abs(v1(i)) / (mo * sqrt(Qvv(i , i)));
+end
+
+%------------------- T-student daðýlýmýna göre -------------------------
+alfa = 0.05 / length(A(: , 1)); % Yanýlma olasýlýðý güven aralýðý, H. Demirel, Dengeleme Hesabý, 2003, syf: syf.183
+if alfa <= 0.001; alfa = 0.001; end
+
+T_dist = tinv(1 - alfa / 2, (f - 1)); % t testinin sýnýr büyüklüðü
+assignin('base','T_dist',T_dist)
+
+xxx
+
+for i = 1 : length(A(: , 1)) % Hüseyin Demirel, Dengeleme Hesabý, YTÜ, 2003, syf.182
+    So(i) = sqrt(((v' * v - v(i)^2 / Qvv(i , i)) / (length(A(: , 1)) - length(dx) - 1)));
+    T_student(i) = abs(v(i)) / (So(i) * sqrt(Qvv(i , i))); % Tx
+    if T_student(i) <= T_dist
+      sonuc(i , 2) = 0;
+    else
+      sonuc(i , 2) = 1;
+    end
+end
+
+
+    
+
 % Normal t-student ve Fisher daðýlým yöntemlerini içerir.
 % En az bir noktadaki uyuþumsuz ölçüyü hesaplar.
-
-% Parametreler --> A: Katsayýlar matrisi V: Düzeltmeler g: YKN
-% (Öztürk ve Þerbetci, 1992)--> Dengeleme Hesabý kitabý sayfa:322-326
-% 01--> sigma = ([Vi]/2n-u)^1/2 %% n: Ölçü sayýsý u: bilinmeyen sayýsý 
-% sigma: Normal daðýlým için kaba hata büyüklüðü
-% 02--> Q   = (A^T * A)^1/2 %% Q: Bilinmeyenlerin ters matrisi
-% 03--> Qvv = Qll - (A * Q * A^T) %% Qvv: Düzeltmelerin aðýrlýk katsayýlar
-% matrisi
-% sigma_user = 1 %% sigma_user: Kullanýcý tarafýndan istenilen sigma (mo) deðeri
-% 04--> Tn = |Vi| / sigmai * (Qvv)^1/2 %% Tn: Normal daðýlýma göre hipotez
-% testi
-% 05--> Sox = (f*sigmao - (Vx / Qvxvx) * (1 / f-1)))^1/2 %% Sox: t-student
-% daðýlýmýna göre kaba hata büyüklüðü
-% 06--> Ti = |Vi| / Sox * (Qvv)^1/2 %% Ti: t-student daðýlýmýna göre
-% hipotez testi
-% 07--> mo = ((Vx^T * Vx) / 2n-u) %% mo: Fisher daðýlýmýna göre kaba hata
-% büyüklüðü
-% 08--> F = Vi^2 / (mo * (Qvivi)^1/2) F: Fisher daðýlýmýna göre hipotez
-% testi
-% 09--> mc = moc(Qvv)^1/2 moc: Koordinat çiftine göre kaba hata büyüklüðü
-% 10--> Tc = ( (Vx^T * Vx + Vy^T * Vy) / 2*mc )^1/2 Tc: Koordinat çiftine
-% göre hipotez testi
-% 
-% Hatýrlatmalar: a- Bu modülde "2*n" ifadesini karýþýklýðý azaltmak adýna A
-% matrinin satýr büyüklüðü ile ifade edilir.
-% b- A(2 * i) = y A(2 * i - 1) = x
-%%
+% Parametreler:
+% A: Katsayýlar matrisi
+% V: Düzeltmeler
+% g: YKN
+% Öztürk ve Þerbetci (1992), Dengeleme Hesabý kitabý sayfa: 322-326
+% sigma = ([Vi]/2n-u)^1/2, Normal daðýlým için kaba hata büyüklüðü, n: Ölçü sayýsý u: bilinmeyen sayýsý, 
+% Q = (A' * A)^1/2, Bilinmeyenlerin ters aðýrlýk matrisi
+% Qvv = Qll - (A * Q * A'), Qvv: Düzeltmelerin ters aðýrlýk matrisi
+% sigma_user = 1 % sigma_user: Kullanýcý tarafýndan istenilen sigma (mo) deðeri
+% Tn = |Vi| / sigmai * (Qvv)^1/2, Tn: Normal daðýlýma göre hipotez testi
+% Sox = (f*sigmao - (Vx / Qvxvx) * (1 / f-1)))^1/2, Sox: t-student daðýlýmýna göre kaba hata büyüklüðü
+% Ti = |Vi| / Sox * (Qvv)^1/2, Ti: t-student daðýlýmýna göre hipotez testi
+% mo = ((Vx' * Vx) / 2n-u), Fisher daðýlýmýna göre kaba hata büyüklüðü
+% F = Vi^2 / (mo * (Qvivi)^1/2), Fisher daðýlýmýna göre hipotez test büyüklüðü
+% mc = moc(Qvv)^1/2, Koordinat çiftine göre kaba hata büyüklüðü
+% Tc = ( (Vx' * Vx + Vy' * Vy) / 2*mc )^1/2, Koordinat çiftine göre hipotez testi
+% Hatýrlatmalar:
+% a) Bu modülde "2*n" ifadesi, karýþýklýðý azaltmak adýna A matrinin satýr büyüklüðü ile ifade edilir.
 % mx = sqrt(v(: , 1)' * v(: , 1) / (2*length(g(: , 1)) - length(dx)));
 % my = sqrt(v(: , 2)' * v(: , 2) / (2*length(g(: , 1)) - length(dx)));
 % mo = sqrt ((v(: , 1)' * v(: , 1) + v(: , 2)' * v(: , 2) )/ (2*length(g(: , 1)) - length(dx)));

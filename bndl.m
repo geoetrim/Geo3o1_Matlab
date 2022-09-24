@@ -151,7 +151,7 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         end
         
     %===== Validation of EOPs =====
-    [tsnc, kor] = par_valid(A, v1, dx, Qxx, Sc);
+    [tsnc, kor] = par_valid(A, B, v1, dx, Qxx, Sc);
     
     %===== Correction of EOPs =====
     if exist('Sp', 'var') == 1
@@ -199,15 +199,18 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
             icp(: , : , i) = 0;
         end
     end
+    if number_images == 3; fprintf(fid,'RMSE at GCPs for 1. and 2. images after bundle adjustment\n'); end
     unknwn_12 = unknwn(: , 1 : 2);%Select unknown
     points_12 = est_XYZ_u(unknwn_12, LOS, gcp(: , : , 1), gcp(: , : , 2), icp(: , : , 1), icp(: , : , 2), fid, model_id);
     assignin('base','points_12',points_12)
     assignin('base','unknwn_12',unknwn_12)
     if number_images == 3
+        fprintf(fid,'RMSE at GCPs for 1. and 3. images after bundle adjustment\n');
         unknwn_13 = [unknwn(: , 1) unknwn(: , 3)];%Select unknown
         points_13 = est_XYZ_u(unknwn_13, LOS, gcp(: , : , 1), gcp(: , : , 3), icp(: , : , 1), icp(: , : , 3), fid, model_id);
         assignin('base','points_13',points_13)
         assignin('base','unknwn_13',unknwn_13)
+        fprintf(fid,'RMSE at GCPs for 2. and 3. images after bundle adjustment\n');
         unknwn_23 = [unknwn(: , 2) unknwn(: , 3)];%Select unknown
         points_23 = est_XYZ_u(unknwn_23, LOS, gcp(: , : , 2), gcp(: , : , 3), icp(: , : , 2), icp(: , : , 3), fid, model_id);
         assignin('base','points_23',points_23)

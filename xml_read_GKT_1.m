@@ -17,7 +17,7 @@ if i > 1
    t_center = evalin('base', 't_center');
 end
 
-[FileName_meta PathName_meta] = uigetfile('*.*','XML File');
+[FileName_meta PathName_meta] = uigetfile('*xml*','XML File');
 fid = evalin('base', 'fid');
 fprintf(fid, '%1d. Metadata file: %1s \n\n', i, [PathName_meta FileName_meta]);
 
