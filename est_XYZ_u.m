@@ -27,7 +27,9 @@ gcp2(: , 13 : 15) = gcp1(: , 13 : 15);
 
 % ===== Estimate the difference and RMSE from the GNSS observed coordinates =====
 dgcp = gcp1(: , 4 : 6) - gcp1(: , 13 : 15);
-assignin('base', 'dgcp', dgcp)
+if number_images == 2
+    assignin('base', 'dgcp_bundle', dgcp)
+end
 
 for i = 1 : 3
     mgcp(i) = sqrt((dgcp(: , i)' * dgcp(: , i)) / length(dgcp(: , 1)));

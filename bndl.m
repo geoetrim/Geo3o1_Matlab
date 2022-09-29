@@ -38,6 +38,7 @@ unknwn = P2U;
 
 %===== Estimation of ~XYZ for all points via raw look angles and EOPs =====
 points = est_XYZ(points, LOS, 0 , model_id); %#ok<NASGU>
+pltv(points, 0)
 
 %===== Pre-adjustment for LOS angles =====
 preq = 1;%input('Apply pre-adjustment? N: 0, Y: 1 >> ');
@@ -134,7 +135,7 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     end
         v1      = B' * korelat;
         for unnecessary = 1 : 1
-%         AB = [A B];
+%%         AB = [A B];
 %         dall = - pinv(AB) * w;
     
 %         %% An alternative solution for dx and vl
@@ -150,7 +151,7 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
 %         v1 = dall((2 * length(Sp) + 3 * length(Sc) + 1) : length(dall));
         end
         
-    %===== Validation of EOPs =====
+    %===== Validation and correlation tests =====
     [tsnc, kor] = par_valid(A, B, v1, dx, Qxx, Sc);
     
     %===== Correction of EOPs =====
@@ -199,22 +200,19 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
             icp(: , : , i) = 0;
         end
     end
-    if number_images == 3; fprintf(fid,'RMSE at GCPs for 1. and 2. images after bundle adjustment\n'); end
+    if number_images == 3
+        fprintf(fid,'RMSE at GCPs for 1. and 2. images after bundle adjustment\n') %#ok<PRTCAL>
+    end
     unknwn_12 = unknwn(: , 1 : 2);%Select unknown
     points_12 = est_XYZ_u(unknwn_12, LOS, gcp(: , : , 1), gcp(: , : , 2), icp(: , : , 1), icp(: , : , 2), fid, model_id);
-    assignin('base','points_12',points_12)
-    assignin('base','unknwn_12',unknwn_12)
+    assignin('base','points_12', points_12)
     if number_images == 3
         fprintf(fid,'RMSE at GCPs for 1. and 3. images after bundle adjustment\n');
         unknwn_13 = [unknwn(: , 1) unknwn(: , 3)];%Select unknown
         points_13 = est_XYZ_u(unknwn_13, LOS, gcp(: , : , 1), gcp(: , : , 3), icp(: , : , 1), icp(: , : , 3), fid, model_id);
-        assignin('base','points_13',points_13)
-        assignin('base','unknwn_13',unknwn_13)
         fprintf(fid,'RMSE at GCPs for 2. and 3. images after bundle adjustment\n');
         unknwn_23 = [unknwn(: , 2) unknwn(: , 3)];%Select unknown
         points_23 = est_XYZ_u(unknwn_23, LOS, gcp(: , : , 2), gcp(: , : , 3), icp(: , : , 2), icp(: , : , 3), fid, model_id);
-        assignin('base','points_23',points_23)
-        assignin('base','unknwn_23',unknwn_23)
         
         %Mean values from two variances
         points(: , 13 : 15 , 1) = (points_12(: , 13 : 15 , 1) + points_13(: , 13 : 15 , 1)) / 2;
@@ -223,8 +221,8 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         
         %Calculate mean values for triplet
         for i = 1 : length(points(: , 1 , 1))
-            for j = 1 : number_images
-                points(i , 12 + j , 1) = sum(points(i , 12 + j , :)) / 3;
+            for j = 13 : 15
+                points(i , j , 1) = sum(points(i , j , :)) / 3;
             end
         end
         points(: , : , 2) = points(: , : , 1);
@@ -233,6 +231,7 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         [gcp_triplet(: , :), ~, ~] = fndicp(points(: , : , 1), Sc);
         
         dgcp_triplet = gcp_triplet(: , 4 : 6) - gcp_triplet(: , 13 : 15);
+        assignin('base','dgcp_triplet', dgcp_triplet)
         
         for i = 1 : 3
             mgcp_triplet(i) = sqrt((dgcp_triplet(: , i)' * dgcp_triplet(: , i)) / length(dgcp_triplet(: , 1)));
@@ -243,13 +242,13 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     end
     %===== Correction of XYZ of ICPs =====
     if Sc(1) > 0
-        dc = reshape(dx(number_images * length(Sp) + 1 : length(dx)), 3, length(Sc));%Export the dXYZ from dx vector 
-        dc = dc';
-        assignin('base','dc',dc)
+        dicp = reshape(dx(number_images * length(Sp) + 1 : length(dx)), 3, length(Sc));%Export the dXYZ from dx vector 
+        dicp = dicp';
+        assignin('base','dicp_bundle',dicp)
         
         %Add misfits to ICP's approximate coordinates
         for  k = 1 : length(fc)
-            points(fc(k) , 13 : 15 , 1) = points(fc(k) , 13 : 15 , 1) + dc(k , :);
+            points(fc(k) , 13 : 15 , 1) = points(fc(k) , 13 : 15 , 1) + dicp(k , :);
         end
         points(: , : , 2) = points(: , : , 1);
         if number_images == 3
@@ -260,7 +259,6 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         for  k = 1 : length(fc)
             dicp(k , :) = points(fc(k), 4 : 6 , 1) - points(fc(k), 13 : 15 , 1);
         end
-        
         assignin('base', 'dicp', dicp)
         
         for k = 1 : 3
@@ -293,4 +291,4 @@ end
 pltv(points, 2)
 assignin('base', 'points', points)
 % ===== Clossing file =====
-% fclose(fid);
+fclose(fid);

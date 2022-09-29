@@ -3,8 +3,8 @@
 
 function [tsnc, korxx] = par_valid (A, B, v, dx, Qxx, Sc)
 
-%===== Loading file id =====
 fid = evalin('base', 'fid');
+number_images = evalin('base', 'number_images');
 
 if Sc == 0 %ICP is not available.
     nSc = 0;
@@ -62,6 +62,7 @@ for i = 1 : (length(Qxx) - 3 * nSc)
         end
     end
 end
+fprintf(fid,'\n');
 
 %Estimating the correlation among look angles and EOPs
 %[1] Mikhail, 1976, syf: 116
@@ -82,6 +83,11 @@ end
 
 %Writting the max correlation among look angles and EOPs into file.
 fprintf(fid,'Max correlation among look angles and EOPs:\n');
-fprintf(fid,'%+1.2f %+1.2f\n', max(korlx)');
+for i = 1 : number_images
+    fprintf(fid,'%+1.2f', max(korlx(i))');
+    if i == number_images
+        fprintf(fid,'\n');
+    end
+end
 
-fprintf(fid,'\n');
+fprintf(fid,'\n\n');

@@ -13,7 +13,7 @@ number_images = evalin('base','number_images');
 divider = 10; %i.e. the image column is divided by 10
 formatSpec = '%.2f'; %Define decimals in scale plotting
 
-%% Assigning coordinate difference
+%% Estimate coordinate difference
 if process_id == 0
     gcp  = points;
 elseif process_id > 0 %if ICPs are existing
@@ -23,14 +23,11 @@ end
 if process_id == 0
     dgcp = evalin('base','dp_direct');
 elseif process_id == 1
-    dgcp = evalin('base','dgcp_pre');
+    dgcp = evalin('base','dgcp');
     dicp = evalin('base','dicp_pre');
 elseif process_id == 2
     if number_images == 2
-        dgcp = evalin('base','dgcp_bundle');
-    elseif number_images == 3
         dgcp = evalin('base','dgcp_triplet');
-    end
     dicp = evalin('base','dicp');
 end
     

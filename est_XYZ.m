@@ -108,41 +108,44 @@ if length(sc) == 2
 elseif (number_images == 3) && (length(sc(: , 1)) == 3)
     %Calculate mean values for triplet
     for i = 1 : length(points(: , 1 , 1));
-        for j = 1 : 3
+        for j = 1 : number_images
             points(i , 12 + j , 1) = sum(points_est(i , j , :)) / 3;
         end
     end
     %Assigning the estimated XYZ to each image
-    for j = 1 : 3 
+    for j = 1 : number_images 
         points(: , 13 : 15 , j) = points(: , 13 : 15 , 1);
     end
+end
     
-    %Discrepancy between the estimated and true XYZ
-    dp = points(: , 4 : 6 , 1) - points(: , 13 : 15 , 1);
-    
-    for i = 1 : 3
-        mdg(i) = sqrt((dp(: , i)' * dp(: , i)) / length(dp(: , 1)));
-    end
+%Discrepancy between the estimated and true XYZ
+dp = points(: , 4 : 6 , 1) - points(: , 13 : 15 , 1);
+if process_id == 0
+    assignin('base','dp_direct', dp)
+elseif process_id == 1
+    assignin('base','dgcp_pre', dp)
+elseif process_id == 2
+    assignin('base','dicp_pre', dp)
+end
 
-    if process_id == 1
-        assignin('base','mdg',mdg)
-    elseif process_id == 2
-        assignin('base','mdi',mdg)
-    end
+for i = 1 : 3
+    mdg(i) = sqrt((dp(: , i)' * dp(: , i)) / length(dp(: , 1)));
+end
 
-    if process_id == 0
-        fprintf(fid,'RMSE of all points via direct georeferencing using triplet images\n');
-    elseif process_id == 1
-        fprintf(fid,'RMSE of GCPs via direct georeferencing following pre-adjustment for triplet\n');
-    elseif process_id == 2
-        fprintf(fid,'RMSE of ICPs via direct georeferencing following pre-adjustment for triplet\n');
-    end
-    fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', mdg);
-    fprintf(fid,'----------------------------------------------\n\n');
-
-    assignin('base', 'fid', fid);
+if process_id == 1
+    assignin('base','mdg',mdg)
+elseif process_id == 2
+    assignin('base','mdi',mdg)
 end
 
 if process_id == 0
-    pltv(points, 0)
+    fprintf(fid,'RMSE of all points via direct georeferencing using triplet images\n');
+elseif process_id == 1
+    fprintf(fid,'RMSE of GCPs via direct georeferencing following pre-adjustment for triplet\n');
+elseif process_id == 2
+    fprintf(fid,'RMSE of ICPs via direct georeferencing following pre-adjustment for triplet\n');
 end
+fprintf(fid,'mX = ± %15.10f (m)\nmY = ± %15.10f (m)\nmZ = ± %15.10f (m)\n\n', mdg);
+fprintf(fid,'----------------------------------------------\n\n');
+
+assignin('base', 'fid', fid);
