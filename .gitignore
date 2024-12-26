@@ -1,5 +1,7 @@
 #generated except source/configuration files
 *.txt
 *.xml
+*.tif
+xml_read_GKT_1.m
 
 #folders
