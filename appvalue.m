@@ -1,16 +1,14 @@
 %Estimation of polynomial coefficients
-%Coded by Hüseyin TOPAN (ZKÜ) July 2009
+%Coded by Hüseyin TOPAN (ZBEÜ) April 2023
 
 function dx = appvalue(gcp, k , dxy, order)
 
-x = gcp (: , dxy); %x-xref or y-yref
-
-L = gcp (: , k); 
+L = gcp(: , k); 
 
 %-------------------------------
 for i = 1 : length (gcp(:, 1))
     for j = 0 : order
-        A(i, j + 1) = x(i)^j;
+        A(i, j + 1) = dxy(i)^j;
     end
 end
 

@@ -1,11 +1,12 @@
 % Bundle adjustment for Geo3o1
 % Adjutment by conditions: Ax + Bv + w = 0
-% Coded by Prof. Dr. Hüseyin TOPAN (ZBEÜ), June 2021
+% Coded by Prof. Dr. Hüseyin TOPAN (ZBEÜ), April 2023
 
 function bndl
 
 %% ===== Definition and loading =====
 number_images = evalin('base','number_images');
+sensor_id     = evalin('base','sensor_id');
 
 %===== Loading file id =====
 fid = evalin('base', 'fid');
@@ -18,14 +19,19 @@ XLOS_0 = evalin('base', 'XLOS_0');
 XLOS_1 = evalin('base', 'XLOS_1');
 YLOS_0 = evalin('base', 'YLOS_0');
 LOS    = [XLOS_0; XLOS_1; YLOS_0];
+if sensor_id == 2
+    YLOS_1 = evalin('base', 'YLOS_1');
+    LOS    = [XLOS_0; XLOS_1; YLOS_0; YLOS_1];
+end
 
 %===== Select functional model ID =====
 model_id = 3;
 fprintf(fid, 'Functional Model ID: %1d \n\n', model_id);
 
 %===== GCP-ICP separation =====
-Spc
+select_EOP
 Sp = evalin('base','Sp');
+select_icp
 Sc = evalin('base','Sc');
 if Sc(1) > 0
     for i = 1 : number_images
@@ -34,25 +40,29 @@ if Sc(1) > 0
 end
 
 %===== Each EOPs into one variable (array format) =====
-unknwn = P2U;
-
+if sensor_id == 1 || sensor_id == 3
+    unknwn = P2U;
+elseif sensor_id == 2
+    unknwn = P2U_SPOT;
+end
 %===== Estimation of ~XYZ for all points via raw look angles and EOPs =====
 points = est_XYZ(points, LOS, 0 , model_id); %#ok<NASGU>
-pltv(points, 0)
+pltv3d(points, 0)
+assignin('base','points_direct',points)
 
 %===== Pre-adjustment for LOS angles =====
 preq = 1;%input('Apply pre-adjustment? N: 0, Y: 1 >> ');
 if preq == 1 && (model_id == 1 || model_id == 3)
     [LOS, gcp, icp] = preadj(gcp, icp, unknwn, LOS, model_id); fprintf(fid, 'Pre-adjustment for LOS angles was applied.\n\n');
+    assignin('base','LOS',LOS)
     gcp = est_XYZ(gcp, LOS, 1, model_id); %Estimation of ~XYZ of GCPs via pre-adjusted LOS angles
     icp = est_XYZ(icp, LOS, 2, model_id); %Estimation of ~XYZ of ICPs via pre-adjusted LOS angles
     points = [gcp ; icp];
     for j = 1 : number_images
         points(: , : , j) = sortrows(points(: , : , j), 1);
     end
-    pltv(points, 1)
+    pltv3d(points, 1)
 end
-
 %% ===== I T E R A T I O N =====
 iteration_limit = 1; if iteration_limit == 1; display('Attention! Total iteration = 1'); end
 for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n', j);    
@@ -70,9 +80,10 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     %===== Jacobian matrix of dXYZ of ICPs =====
     if Sc(1) > 0
         for i = 1 : number_images
-            AXYZ_u(:, : , i) = A_dXYZ(unknwn(: , i), points(: , : , i), fc, LOS(: , i), model_id);
+            AXYZ_u(:, : , i) = A_dXYZ(unknwn(: , i), points(: , : , i), fc, model_id);
         end
         AXYZ = [AXYZ_u(: , : , 1); AXYZ_u(: , : , 2)];
+        assignin('base','AXYZ',AXYZ)
         if number_images == 3
             AXYZ = [AXYZ; AXYZ_u(: , : , 3)];
         end
@@ -85,7 +96,6 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     elseif (exist('Sp','var') == 1) && (Sc(1) > 0)
         A = [AEOP AXYZ];
     end
-  
     %===== Jacobian matrix of look angles and absolute term vectors ====
     for i = 1 : number_images
         if model_id == 1
@@ -118,11 +128,11 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     end
 %%  %===== Calculation of dx, k, v =====
     [mm , nn] = size(A' * (B * B') * A);
-    eig(A' * ((B * B') \ A))
-    lamda = input('lamda= ');
+%     eig(A' * ((B * B') \ A))
+    lamda = 0;%input('lamda= ');
     if model_id == 1 || model_id == 3
             Qxx =   inv(A' * ((B * B') \ A) + lamda * eye(mm , nn)); if lamda ~= 0; fprintf(fid, 'Parameter estimation: Tikhonov regularization\n\n');end
-%             Qxx = pinv(A' * inv(B * B') * A); fprintf(fid, 'Parameter estimation: Moore-Penrose (pseudo) inversion\n\n');
+%             Qxx = pinv(A' * ((B * B') \ A)); fprintf(fid, 'Parameter estimation: Moore-Penrose (pseudo) inversion\n\n');
 %             Qxx = cholesky_ters(A' * inv(B * B') * A + lamda * eye(mm , nn)); fprintf(fid, 'Parameter estimation: Cholesky inversion\n\n');
 %             Qxx = gauss_ters(A' * inv(B * B') * A + lamda * eye(mm , nn)); fprintf(fid, 'Parameter estimation: Gauss inversion\n\n');
 %             Qxx = pivot(A' * inv(B * B') * A); fprintf(fid, 'Parameter estimation: Pivoting\n\n');
@@ -201,7 +211,7 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
         end
     end
     if number_images == 3
-        fprintf(fid,'RMSE at GCPs for 1. and 2. images after bundle adjustment\n') %#ok<PRTCAL>
+        fprintf(fid,'RMSE at GCPs for 1. and 2. images after bundle adjustment\n'); 
     end
     unknwn_12 = unknwn(: , 1 : 2);%Select unknown
     points_12 = est_XYZ_u(unknwn_12, LOS, gcp(: , : , 1), gcp(: , : , 2), icp(: , : , 1), icp(: , : , 2), fid, model_id);
@@ -244,22 +254,21 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     if Sc(1) > 0
         dicp = reshape(dx(number_images * length(Sp) + 1 : length(dx)), 3, length(Sc));%Export the dXYZ from dx vector 
         dicp = dicp';
-        assignin('base','dicp_bundle',dicp)
         
         %Add misfits to ICP's approximate coordinates
         for  k = 1 : length(fc)
             points(fc(k) , 13 : 15 , 1) = points(fc(k) , 13 : 15 , 1) + dicp(k , :);
         end
-        points(: , : , 2) = points(: , : , 1);
+        points(: , 13 : 15 , 2) = points(: , 13 : 15 , 1);
         if number_images == 3
-            points(: , : , 3) = points(: , : , 1);
+            points(: , 13 : 15 , 3) = points(: , 13 : 15 , 1);
         end
         
         %Estimate shift between corrected and ground-truth coordinates of ICP's
         for  k = 1 : length(fc)
             dicp(k , :) = points(fc(k), 4 : 6 , 1) - points(fc(k), 13 : 15 , 1);
         end
-        assignin('base', 'dicp', dicp)
+        assignin('base', 'dicp_bundle', dicp)
         
         for k = 1 : 3
             micp(k) = sqrt((dicp(: , k)' * dicp(: , k)) / length(fc));
@@ -284,11 +293,12 @@ for j = 1 : iteration_limit; fprintf(fid, 'Bundle adjustment iteration: %2d \n\n
     fprintf(fid,'----------------------------------------------\n\n');
     
     %===== Program's termination =====
-    endthr
+%     gsd = evalin('base', 'gsd');
+%     if max(micp) <= 1.2 * gsd; return; end; disp('|Termination by reaching desired ICP accuracy (1.2×GSD).|');
 end
+assignin('base', 'points', points)
 
 %% ===== Plotting =====
-pltv(points, 2)
-assignin('base', 'points', points)
+pltv3d(points, 2)
 % ===== Clossing file =====
 fclose(fid);

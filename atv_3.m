@@ -7,23 +7,35 @@
 
 function w = atv_3(unknown, gcp, preq)
 
+sensor_id = evalin('base','sensor_id');
+
 if preq ~= 1
     Sc = evalin('base', 'Sc');
 end
+if sensor_id == 1 || sensor_id == 3
+    t_start  = unknown(1);
+    t_period = unknown(2);
+    t_offset = unknown(3); 
+    t_scale  = unknown(4);
 
-t_start  = unknown(1);
-t_period = unknown(2);
-t_offset = unknown(3); 
-t_scale  = unknown(4);
-
-Xs0  = unknown( 5);   Xs1 = unknown( 6);  Xs2 = unknown( 7);
-Ys0  = unknown( 8);   Ys1 = unknown( 9);  Ys2 = unknown(10);   
-Zs0  = unknown(11);   Zs1 = unknown(12);  Zs2 = unknown(13);
- 
-Q0_0 = unknown(14);  Q0_1 = unknown(15); Q0_2 = unknown(16); Q0_3 = unknown(17);   
-Q1_0 = unknown(18);  Q1_1 = unknown(19); Q1_2 = unknown(20); Q1_3 = unknown(21);   
-Q2_0 = unknown(22);  Q2_1 = unknown(23); Q2_2 = unknown(24); Q2_3 = unknown(25);    
-Q3_0 = unknown(26);  Q3_1 = unknown(27); Q3_2 = unknown(28); Q3_3 = unknown(29);
+    Xs0 = unknown( 5);  Xs1 = unknown( 6);  Xs2 = unknown( 7);
+    Ys0 = unknown( 8);  Ys1 = unknown( 9);  Ys2 = unknown(10);   
+    Zs0 = unknown(11);  Zs1 = unknown(12);  Zs2 = unknown(13);
+   
+    Q0_0 = unknown(14); Q0_1 = unknown(15); Q0_2 = unknown(16); Q0_3 = unknown(17);   
+    Q1_0 = unknown(18); Q1_1 = unknown(19); Q1_2 = unknown(20); Q1_3 = unknown(21);   
+    Q2_0 = unknown(22); Q2_1 = unknown(23); Q2_2 = unknown(24); Q2_3 = unknown(25);    
+    Q3_0 = unknown(26); Q3_1 = unknown(27); Q3_2 = unknown(28); Q3_3 = unknown(29);
+elseif sensor_id == 2
+    Xs0 = unknown(1);   Xs1 = unknown(2);   Xs2 = unknown(3);
+    Ys0 = unknown(4);   Ys1 = unknown(5);   Ys2 = unknown(6);   
+    Zs0 = unknown(7);   Zs1 = unknown(8);   Zs2 = unknown(9);
+   
+    Q0_0 = unknown(10); Q0_1 = unknown(11); Q0_2 = unknown(12);
+    Q1_0 = unknown(13); Q1_1 = unknown(14); Q1_2 = unknown(15);   
+    Q2_0 = unknown(16); Q2_1 = unknown(17); Q2_2 = unknown(18);    
+    Q3_0 = unknown(19); Q3_1 = unknown(20); Q3_2 = unknown(21);
+end
 
 for i = 1 : length(gcp(:, 1))
     dx = gcp(i , 7);
@@ -47,19 +59,26 @@ for i = 1 : length(gcp(:, 1))
     Ps = [Xs; Ys; Zs];
 
     P = [X; Y; Z];
-
-    t = t_start + dx * t_period;
-
-    tcn = (t - t_offset) / t_scale;
-
-    Q0 = Q0_0 + Q0_1 * tcn + Q0_2 * tcn^2 + Q0_3 * tcn^3;
-    Q1 = Q1_0 + Q1_1 * tcn + Q1_2 * tcn^2 + Q1_3 * tcn^3;
-    Q2 = Q2_0 + Q2_1 * tcn + Q2_2 * tcn^2 + Q2_3 * tcn^3;
-    Q3 = Q3_0 + Q3_1 * tcn + Q3_2 * tcn^2 + Q3_3 * tcn^3;
-
-    Q = [Q0 Q1 Q2 Q3];
-
-    Qn = Q / sqrt (Q * Q');
+    
+    if sensor_id == 1 || sensor_id == 3
+        t = t_start + dx * t_period;
+        tcn = (t - t_offset) / t_scale;
+        Q0 = Q0_0 + Q0_1 * tcn + Q0_2 * tcn^2 + Q0_3 * tcn^3;
+        Q1 = Q1_0 + Q1_1 * tcn + Q1_2 * tcn^2 + Q1_3 * tcn^3;
+        Q2 = Q2_0 + Q2_1 * tcn + Q2_2 * tcn^2 + Q2_3 * tcn^3;
+        Q3 = Q3_0 + Q3_1 * tcn + Q3_2 * tcn^2 + Q3_3 * tcn^3;
+    elseif sensor_id == 2
+        Q0 = Q0_0 + Q0_1 * dx + Q0_2 * dx^2;
+        Q1 = Q1_0 + Q1_1 * dx + Q1_2 * dx^2;
+        Q2 = Q2_0 + Q2_1 * dx + Q2_2 * dx^2;
+        Q3 = Q3_0 + Q3_1 * dx + Q3_2 * dx^2;
+    end
+    Q = [Q0 Q1 Q2 Q3];   
+    if sensor_id == 1 || sensor_id == 3
+        Qn = Q / sqrt (Q * Q');
+    elseif sensor_id == 2
+        Qn = Q;
+    end
 
     R(1 , 1) = Qn(1)^2 + Qn(2)^2 - Qn(3)^2 - Qn(4)^2;
     R(1 , 2) = 2 * (Qn(2) * Qn(3) - Qn(1) * Qn(4));

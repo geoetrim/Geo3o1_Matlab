@@ -26,7 +26,7 @@ T = tinv (0.975, f); %Test value from table
 for i = 1 : length (dx)
     t (i) = abs (dx(i)) / m(i);
     if t (i) <= T
-        tsnc (i) = 0; %unvalid
+        tsnc (i) = 0; %invalid
     else
         tsnc (i) = 1; %valid
     end
@@ -84,7 +84,7 @@ end
 %Writting the max correlation among look angles and EOPs into file.
 fprintf(fid,'Max correlation among look angles and EOPs:\n');
 for i = 1 : number_images
-    fprintf(fid,'%+1.2f', max(korlx(i))');
+    fprintf(fid,'%+1.2f ', max(korlx(i))');
     if i == number_images
         fprintf(fid,'\n');
     end

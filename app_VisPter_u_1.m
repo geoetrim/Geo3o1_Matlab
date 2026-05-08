@@ -2,6 +2,8 @@
 
 function VisPter = app_VisPter_u_1 (gcp , unknwn , LOS, mdl)
 %% Loading
+sensor_id = evalin('base','sensor_id');
+
 if mdl == 1
     XLOS_0 = LOS(1);
     XLOS_1 = LOS(2);
@@ -11,13 +13,16 @@ elseif mdl == 3
     psix = gcp(19);
 end
 
-t_start  = unknwn(1);
-t_period = unknwn(2);
-t_offset = unknwn(3);
-t_scale  = unknwn(4);
-
-Q_pre = reshape(unknwn(14 : 29), [4 , 4]);
-Q_pre = Q_pre';
+if sensor_id == 1 || sensor_id == 3
+    t_start  = unknwn(1);
+    t_period = unknwn(2);
+    t_offset = unknwn(3);
+    t_scale  = unknwn(4);
+    Q_pre = reshape(unknwn(14 : 29), [4 , 4]);
+elseif sensor_id == 2
+    Q_pre = reshape(unknwn(10 : 21), [3 , 4]);
+end
+    Q_pre = Q_pre';
 
 %% Estimation
 if mdl == 1
@@ -26,20 +31,20 @@ elseif mdl == 3
     VisPscan = [tan(psiy); -tan(psix); 1];
 end
 
-t = t_start + gcp(: , 7) * t_period;
-
-tcn = (t - t_offset) / t_scale;
-
-for i = 1 : 4
-    for j = 1 : 4
-        Q2(j) = Q_pre(i , j) * tcn^(j - 1);
+if sensor_id == 1 || sensor_id == 3
+    t = t_start + gcp(: , 7) * t_period;
+    tcn = (t - t_offset) / t_scale;
+    for i = 1 : 4
+        for j = 1 : 4
+            Q2(j) = Q_pre(i , j) * tcn^(j - 1);
+        end
+        Q3(i) = sum(Q2);
     end
-    Q3(i) = sum(Q2);
+    Q3 = Q3';
+    Qn = Q3 / sqrt (Q3' * Q3);
+elseif sensor_id == 2
+    Qn = Q_pre * [1; gcp(: , 7); gcp(: , 7)^2];
 end
-
-Q3 = Q3';
-
-Qn = Q3 / sqrt (Q3' * Q3);
 
 R(1 , 1) = Qn(1)^2 + Qn(2)^2 - Qn(3)^2 - Qn(4)^2;
 R(1 , 2) = 2 * (Qn(2) * Qn(3) - Qn(1) * Qn(4));

@@ -1,4 +1,4 @@
-%All parameters in a matrix into one array
+%All parameters in a matrix into one array for Pléiades 1A&1B and Göktürk 1
 
 function unknwn = P2U
 

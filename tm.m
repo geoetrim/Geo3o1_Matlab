@@ -1,4 +1,4 @@
-% Finding H, M, S in the XML file.
+% Finding hour, minute, and second in the XML file.
 % Recoded by Ali CAM, BEÜ, 2015
 
 function time1 = tm(dt)

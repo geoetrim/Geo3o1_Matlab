@@ -1,132 +1,141 @@
-3D georeferencing of Pléiades 1A&1B primary, SPOT 6&7 primary and Göktürk 1 L2A tri-stereo images by Prof. Hüseyin TOPAN, Dr. Gürsu AYTEKÝN, Zonguldak Bülent Ecevit University, December 2020, Zonguldak, Turkey
+Geo3o1: 3D georeferencing of Pléiades 1A&1B&Neo primary, SPOT 6&7 primary and Göktürk 1 L2A stereo/triplet images 
 
-Date: 2022  9 29 14 54 26
+as a sub-tool of GeoEtrim, Zonguldak Bülent Ecevit University, January 2026, Zonguldak, Türkiye
 
-1. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269koor_GCP_XYZ.txt 
+by Prof. Hüseyin TOPAN: Overall conception, workflow and coding by Matlab 
+by Dr. Gürsu AYTEKÝN: Understanding tri-stereo space intersection and Göktürk 1 metafile importing 
+by Mr. Ali CAM: XML file importing 
+by Prof. Bahattin ERDOÐAN: Interpolation of look angles of ICPs from of GCPs 
+Date: 2026  5  5 10 46  6
 
-1. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\269.XML 
+1. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\IMG_PNEO3_202408220848427_PAN_SEN_PWOI_000231046_1_2_F_1_P_R1C1_WGS84_XYZ.txt 
 
-2. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283koor_GCP_XYZ.txt 
+1. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\DIM_PNEO3_202408220848427_PAN_SEN_PWOI_000231046_1_2_F_1.XML 
 
-2. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\283.XML 
+2. Point file: d:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\IMG_PNEO3_202408220848556_PAN_SEN_PWOI_000231046_1_2_F_1_P_R1C1_WGS84_XYZ.txt 
 
-3. Point file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\284koor_GCP_XYZ.txt 
+2. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\DIM_PNEO3_202408220848556_PAN_SEN_PWOI_000231046_1_2_F_1.XML 
 
-3. Metadata file: D:\Belgelerim\1_Akademik\Program\1_Matlab\GeoEtrim\Geo3o1\Geo3o1_6\Pleiades_Zonguldak\284.XML 
+3. Point file: d:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\IMG_PNEO3_202408220849266_PAN_SEN_PWOI_000231046_1_2_F_1_P_R1C1_WGS84_XYZ.txt 
+
+3. Metadata file: d:\Belgelerim\1_Akademik\Program\1_Matlab\Goruntuler\Pleiades_Neo\DIM_PNEO3_202408220849266_PAN_SEN_PWOI_000231046_1_2_F_1.XML 
 
 Ignored points:
-1 3 14 17 18 19 25 27 28 30 31 32 33 34 35 37 43 45 46 50 51 52 55 58 59 61 62 63 64 65 66 70 71 74 78 80 82 83 85 89 91 93 94 96 97 104 106 111 114 117 118 120 122 123 124 134 138 141 143 146 167 168 176 178 185 195 246 247 249 251 252 255 259 272 274 275 276 293 294 306 2591 
+33 123 
 
 Functional Model ID: 3 
 
 Selected EOPs:
- 1 t_start 
+ 1 Xs0  
+
+The longest base via 1. and 3. images
 
 RMSE of all points via direct georeferencing using 1. and 2. images
-mX = ±    3.0609622623 (m)
-mY = ±    7.6060489038 (m)
-mZ = ±    2.3543845199 (m)
+mX = ±    1.0920300069 (m)
+mY = ±    0.9618637350 (m)
+mZ = ±    1.1610078540 (m)
 
 RMSE of all points via direct georeferencing using 1. and 3. images
-mX = ±    2.1232654657 (m)
-mY = ±    8.3633144311 (m)
-mZ = ±    3.3714338911 (m)
+mX = ±    0.9879403246 (m)
+mY = ±    0.8770252214 (m)
+mZ = ±    0.8359681351 (m)
 
 RMSE of all points via direct georeferencing using 2. and 3. images
-mX = ±    2.3156618380 (m)
-mY = ±    7.9933572065 (m)
-mZ = ±    2.4921984638 (m)
+mX = ±    1.0541826799 (m)
+mY = ±    0.9252975724 (m)
+mZ = ±    0.8719747961 (m)
 
-RMSE of all points via direct georeferencing using triplet images
-mX = ±    2.3519053873 (m)
-mY = ±    7.9769283609 (m)
-mZ = ±    2.5356365469 (m)
+RMSE of all points via direct georeferencing using triplet set
+mX = ±    0.9805269073 (m)
+mY = ±    0.8728767342 (m)
+mZ = ±    0.8467260591 (m)
 
 ----------------------------------------------
 
 Pre-adjustment for LOS angles was applied.
 
-RMSE of GCPs via direct georeferencing using 1. and 2. images following pre-adjustment
-mX = ±    0.0003524544 (m)
-mY = ±    0.0000373923 (m)
-mZ = ±    0.0003405787 (m)
+RMSE of GCPs using 1. and 2. images following pre-adjustment
+mX = ±    0.0068176527 (m)
+mY = ±    0.0056962854 (m)
+mZ = ±    0.0098973736 (m)
 
-RMSE of GCPs via direct georeferencing using 1. and 3. images following pre-adjustment
-mX = ±    0.0001511902 (m)
-mY = ±    0.0000678779 (m)
-mZ = ±    0.0005663312 (m)
+RMSE of GCPs using 1. and 3. images following pre-adjustment
+mX = ±    0.0030557140 (m)
+mY = ±    0.0022639439 (m)
+mZ = ±    0.0035129420 (m)
 
-RMSE of GCPs via direct georeferencing using 2. and 3. images following pre-adjustment
-mX = ±    0.0002394097 (m)
-mY = ±    0.0000282795 (m)
-mZ = ±    0.0004378697 (m)
+RMSE of GCPs using 2. and 3. images following pre-adjustment
+mX = ±    0.0049727292 (m)
+mY = ±    0.0034749148 (m)
+mZ = ±    0.0045050909 (m)
 
-RMSE of GCPs via direct georeferencing following pre-adjustment for triplet
-mX = ±    0.0002472197 (m)
-mY = ±    0.0000277760 (m)
-mZ = ±    0.0004467667 (m)
+RMSE of GCPs using triplet set following pre-adjustment
+mX = ±    0.0031506329 (m)
+mY = ±    0.0024194564 (m)
+mZ = ±    0.0039107652 (m)
 
-----------------------------------------------
+RMSE of ICPs using 1. and 2. images following pre-adjustment
+mX = ±    0.6219163992 (m)
+mY = ±    0.5759948536 (m)
+mZ = ±    0.9299589845 (m)
 
-RMSE of ICPs via direct georeferencing using 1. and 2. images following pre-adjustment
-mX = ±    0.6686857915 (m)
-mY = ±    0.6607457368 (m)
-mZ = ±    0.7833158749 (m)
+RMSE of ICPs using 1. and 3. images following pre-adjustment
+mX = ±    0.3418746603 (m)
+mY = ±    0.3484643495 (m)
+mZ = ±    0.3737003894 (m)
 
-RMSE of ICPs via direct georeferencing using 1. and 3. images following pre-adjustment
-mX = ±    0.8714417678 (m)
-mY = ±    0.6382228351 (m)
-mZ = ±    0.8828790381 (m)
+RMSE of ICPs using 2. and 3. images following pre-adjustment
+mX = ±    0.4702815113 (m)
+mY = ±    0.4128790390 (m)
+mZ = ±    0.4095925645 (m)
 
-RMSE of ICPs via direct georeferencing using 2. and 3. images following pre-adjustment
-mX = ±    0.5031897658 (m)
-mY = ±    0.6084174245 (m)
-mZ = ±    0.4022314824 (m)
-
-RMSE of ICPs via direct georeferencing following pre-adjustment for triplet
-mX = ±    0.4834415877 (m)
-mY = ±    0.5830530392 (m)
-mZ = ±    0.3995668808 (m)
+RMSE of ICPs using triplet set following pre-adjustment
+mX = ±    0.3500208301 (m)
+mY = ±    0.3617715474 (m)
+mZ = ±    0.4386131929 (m)
 
 ----------------------------------------------
 
 Bundle adjustment iteration:  1 
 
 Validation of EOPs:
+1 th EOP is invalid.
+2 th EOP is invalid.
+3 th EOP is invalid.
 
 Correlation among EOPs:
-+1.00 +0.04 +0.04 
-+0.04 +1.00 +0.03 
-+0.04 +0.03 +1.00 
++1.00 +0.14 +0.02 
++0.14 +1.00 +0.08 
++0.02 +0.08 +1.00 
 
 Max correlation among look angles and EOPs:
-+0.03-0.10+0.03
+-0.10 +0.09 -0.10 
 
 
 RMSE at GCPs for 1. and 2. images after bundle adjustment
-mX = ±    0.0342357094 (m)
-mY = ±    0.0184803658 (m)
-mZ = ±    0.0387605064 (m)
+mX = ±    0.0126282850 (m)
+mY = ±    0.0086177957 (m)
+mZ = ±    0.0147484917 (m)
 
 RMSE at GCPs for 1. and 3. images after bundle adjustment
-mX = ±    0.0082351380 (m)
-mY = ±    0.0008976926 (m)
-mZ = ±    0.0062490369 (m)
+mX = ±    0.0088256861 (m)
+mY = ±    0.0077561351 (m)
+mZ = ±    0.0092278357 (m)
 
 RMSE at GCPs for 2. and 3. images after bundle adjustment
-mX = ±    0.0190578774 (m)
-mY = ±    0.0102482785 (m)
-mZ = ±    0.0242419640 (m)
+mX = ±    0.0062843792 (m)
+mY = ±    0.0072123051 (m)
+mZ = ±    0.0079378701 (m)
 
 RMSE at GCPs after bundle adjustment for triplet set
-mX = ±    0.0205095508 (m)
-mY = ±    0.0092782000 (m)
-mZ = ±    0.0230837903 (m)
+mX = ±    0.0092461149 (m)
+mY = ±    0.0078620770 (m)
+mZ = ±    0.0106380608 (m)
 
 RMSE on ICPs after bundle adjustment
-mX = ±    0.4847096325 (m)
-mY = ±    0.5850765246 (m)
-mZ = ±    0.4033780046 (m)
+mX = ±    0.3515350774 (m)
+mY = ±    0.3520544029 (m)
+mZ = ±    0.3678096421 (m)
 
 Difference =      0.001 
 

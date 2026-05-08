@@ -5,7 +5,7 @@
 % respectively, at the differantial formulation below since psiy and psix were updated
 % (adjusted) and reused at bundle adjustment stage.
 
-function B = Jacobian_LA_3(gcp);
+function B = Jacobian_LA_3(gcp)
 
 psiy = gcp(: , 18);
 psix = gcp(: , 19);

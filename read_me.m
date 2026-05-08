@@ -13,8 +13,8 @@ GCP file
  8 y-yo   <= added by program
  9 ti     <= added by program (time of each line)
 10 Xs     <= added by program (Approx. position of principle point for each line)
-11 Ys     <= added by program (                           "                     ) 
-12 Zs     <= added by program (			    			  "                     )
+11 Ys     <= added by program (Approx. position of principle point for each line) 
+12 Zs     <= added by program (Approx. position of principle point for each line)
 13 ~X and X <= added by program (~X for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), X: corrected value)
 14 ~Y and Y <= added by program (~Y for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), Y: corrected value)
 15 ~Z and Z <= added by program (~Z for bundle adjustment in first iteration (this value might be estimated via raw parameters or pre-adjusted LOS angles), Z: corrected value)
@@ -32,7 +32,7 @@ Satellite position & velocity file:
  6 Vy
  7 Vz
  
- Parameters
+ Parameters (varied for the satellite)
  1 = t_start 
  2 = t_period
  3 = t_offset

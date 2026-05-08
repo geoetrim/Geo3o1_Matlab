@@ -8,9 +8,11 @@
 
 function pltv(points, process_id)
 
-gsd = evalin('base','gsd');
+gsd           = evalin('base','gsd');
 number_images = evalin('base','number_images');
+sensor_name   = evalin('base','sensor_name');
 divider = 10; %i.e. the image column is divided by 10
+if strcmp(sensor_name, 'S6_SENSOR') == 1; divider = 40; end
 formatSpec = '%.2f'; %Define decimals in scale plotting
 
 %% Assigning coordinate difference
@@ -36,6 +38,7 @@ end
     
 %% Define scale(s) w.r.t. processes
 column_size = evalin('base','column_size');
+row_size    = evalin('base','row_size');
 if process_id == 0
     mgcp = evalin('base','mdg_direct');
 elseif process_id == 1 %For the pre-adjustment step
@@ -58,7 +61,7 @@ if process_id > 0
     assignin('base','scale_icp',scale_icp)
 end
 
-%% ===== Set geometric properties of figure =====
+%% ===== Set geometric properties of 2D figure =====
 figure
 hold on
 box on
@@ -72,11 +75,11 @@ ylabel('row (pixel)','FontSize',16);
 
 %% ===== Vector plotting =====
 if process_id == 0
-    title('Residuals of estimated XYZ from raw EOPs and LOS angles');
+    title('Residuals for direct georeferencing');
 elseif process_id == 1
-    title('Residuals of estimated XYZ from stereo image with adjusted look angles at GCPs and ICPs');
+    title('Residuals for pre-adjustment');
 elseif process_id == 2
-    title('Residuals at GCPs and ICPs after bundle adjustment');
+    title('Residuals for bundle adjustment');
 end
 
 %% ===== Plotting for GCPs =====
@@ -91,12 +94,11 @@ set(hndl2,'MarkerSize',3);
 set(hndl2,'Color','black');
 set(hndl2,'LineWidth',1.5);
 %===== Scale plotting =====
-hndl4 = quiver(column_size / divider, column_size / divider, column_size / divider, 0, 0, 'o');
+hndl4 = quiver(row_size / divider, row_size / divider, column_size / divider, 0, 0, 'o');
 set(hndl4,'LineWidth',1.5);
 set(hndl4,'MarkerSize',1.5);
 set(hndl4,'Color','black');
-% text(2 * (column_size * gsd) / divider + scale_gcp * mo_gcp, (column_size * gsd) / divider, num2str(mo_gcp), 'FontSize',15);
-text(2.5 * column_size / divider, column_size / divider, num2str(mo_gcp), 'FontSize',15);
+text(4 * row_size / divider, row_size / divider, num2str(mo_gcp), 'FontSize',15);
 hold on
 %% ===== Plotting for ICPs =====
 if process_id > 0
@@ -111,9 +113,9 @@ if process_id > 0
     set(hndl7,'Color','black');
     set(hndl7,'LineWidth',1.5);
     %===== Scale plotting =====
-    hndl8 = quiver(column_size / divider, column_size / divider, column_size / divider, 0, 0, 'o');
+    hndl8 = quiver(row_size / divider, row_size / divider, column_size / divider, 0, 0, 'o');
     set(hndl8,'LineWidth',1.5);
     set(hndl8,'MarkerSize',1.5);
     set(hndl8,'Color','black');
-    text(2.5 * column_size / divider, 2 * column_size / divider, num2str(mo_icp, formatSpec), 'FontSize',15);
+    text(4 * row_size / divider, 2 * row_size / divider, num2str(mo_icp, formatSpec), 'FontSize',15);
 end

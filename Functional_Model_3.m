@@ -1,4 +1,4 @@
-%Functional model for as SPOT-5
+%Functional model for Pléiades 1A&1B and Göktürk-1
 clear all; clc;
 
 syms X Y Z ... 
